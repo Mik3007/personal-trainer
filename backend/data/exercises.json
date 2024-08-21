@@ -1,0 +1,39 @@
+{
+    "esercizi": [
+      {
+        "nome": "Panca piana",
+        "muscoli": ["petto", "tricipiti"],
+        "attrezzatura": ["bilanciere", "panca"],
+        "videoUrl": "https://example.com/videos/panca-piana.mp4",
+        "descrizione": "Sdraiarsi sulla panca con i piedi ben piantati a terra. Afferrare il bilanciere con una presa leggermente più ampia delle spalle. Abbassare il bilanciere fino al petto e poi spingere verso l'alto fino a distendere completamente le braccia."
+      },
+      {
+        "nome": "Squat",
+        "muscoli": ["quadricipiti", "glutei", "core"],
+        "attrezzatura": ["bilanciere", "rack"],
+        "videoUrl": "https://example.com/videos/squat.mp4",
+        "descrizione": "Posizionare il bilanciere sulle spalle, dietro il collo. Piedi alla larghezza delle spalle. Piegare le ginocchia e abbassare il corpo come se ci si stesse sedendo su una sedia, mantenendo la schiena dritta. Risalire spingendo attraverso i talloni."
+      },
+      {
+        "nome": "Stacchi da terra",
+        "muscoli": ["schiena", "glutei", "gambe"],
+        "attrezzatura": ["bilanciere"],
+        "videoUrl": "https://example.com/videos/stacchi.mp4",
+        "descrizione": "Posizionarsi davanti al bilanciere con i piedi alla larghezza delle anche. Piegarsi e afferrare il bilanciere con una presa mista. Sollevare il bilanciere mantenendo la schiena dritta, spingendo attraverso i talloni. Abbassare il bilanciere controllando il movimento."
+      },
+      {
+        "nome": "Pull-up",
+        "muscoli": ["dorsali", "bicipiti"],
+        "attrezzatura": ["sbarra"],
+        "videoUrl": "https://example.com/videos/pull-up.mp4",
+        "descrizione": "Afferrare la sbarra con le mani rivolte in avanti, leggermente più larghe delle spalle. Partendo dalla posizione appesa, tirare il corpo verso l'alto fino a che il mento supera la sbarra. Abbassarsi controllando il movimento."
+      },
+      {
+        "nome": "Military Press",
+        "muscoli": ["spalle", "tricipiti"],
+        "attrezzatura": ["bilanciere"],
+        "videoUrl": "https://example.com/videos/military-press.mp4",
+        "descrizione": "In piedi con il bilanciere appoggiato sul petto, mani leggermente più larghe delle spalle. Spingere il bilanciere sopra la testa fino a distendere completamente le braccia. Abbassare il bilanciere controllando il movimento."
+      }
+    ]
+  }
