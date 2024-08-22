@@ -63,11 +63,6 @@ const NavHero = () => {
           <p className="mt-6 text-lg md:text-xl">@francesco_raucci_pt</p>
         </div>
       </div>
-
-      {/* Contenuto aggiuntivo della pagina può essere aggiunto qui */}
-      <div className="flex-grow bg-gray-100">
-        {/* Altro contenuto */}
-      </div>
     </div>
   );
 };
