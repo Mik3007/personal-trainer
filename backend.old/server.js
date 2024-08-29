@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import listEndpoints from 'express-list-endpoints';
 import connectDB from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -35,14 +34,6 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  
-  // Crea una tabella delle rotte disponibili
-  const routes = listEndpoints(app);
-  console.log('\nAvailable Routes:');
-  console.table(routes.map(route => ({
-    path: route.path,
-    methods: route.methods.join(', ')
-  })));
 });
 
 export default app;

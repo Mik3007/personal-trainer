@@ -1,34 +1,52 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
-import Workouts from './pages/Workouts';
-import CreateWorkout from './pages/CreateWorkout';
+import Users from './pages/Users';
+import Navbar from './components/Navbar';
+import { setAuthToken, authService } from './services/api';
 
 function App() {
-  const { isLoading, error, isAuthenticated } = useAuth0();
+  const { isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
 
-  console.log('isAuthenticated:', isAuthenticated);
+  useEffect(() => {
+    const syncUser = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
+          setAuthToken(token);
+          await authService.syncUser();
+          console.log('User synced with backend');
+        } catch (error) {
+          console.error('Error syncing user:', error);
+        }
+      }
+    };
+
+    syncUser();
+  }, [isAuthenticated, getAccessTokenSilently, user]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Oops... {error.message}</div>;
-  }
-
   return (
     <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/workouts" element={<Workouts />} />
-          <Route path="/create-workout" element={<CreateWorkout />} />
-        </Routes>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route 
+          path="/profile" 
+          element={isAuthenticated ? <Profile /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/users" 
+          element={isAuthenticated ? <Users /> : <Navigate to="/" />} 
+        />
+      </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

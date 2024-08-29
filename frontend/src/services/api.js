@@ -1,96 +1,51 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Assicurati che questa sia la URL corretta del tuo backend
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+console.log('API_URL:', API_URL);
 
+// Configurazione di axios con l'URL base
 const api = axios.create({
   baseURL: API_URL,
 });
 
-// Funzione per impostare il token di autenticazione
-export const setAuthToken = (token) => {
-  if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete api.defaults.headers.common['Authorization'];
-  }
+// Operazioni CRUD per gli utenti
+export const userService = {
+  getProfile: (token) => api.get('/users/profile', {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  updateProfile: (userData, token) => api.put('/users/profile', userData, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  getAllUsers: (token) => api.get('/users/all', {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  promoteUser: (userId, token) => api.put(`/users/promote/${userId}`, {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
 };
 
-// Funzioni per le chiamate API relative agli utenti
-export const getUserProfile = async (token) => {
-    try {
-      const response = await api.get('/users/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response.data;
-    }
-  };
-
-// Funzioni per le chiamate API relative alle schede d'allenamento
-export const createWorkoutPlan = async (workoutPlanData) => {
-  try {
-    const response = await api.post('/workout-plans', workoutPlanData);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
+// Operazioni CRUD per i piani di allenamento
+export const workoutPlanService = {
+  getAll: (token) => api.get('/workout-plans', {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  getOne: (id, token) => api.get(`/workout-plans/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  create: (planData, token) => api.post('/workout-plans', planData, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  update: (id, planData, token) => api.put(`/workout-plans/${id}`, planData, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
+  delete: (id, token) => api.delete(`/workout-plans/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
 };
 
-export const getUserWorkoutPlans = async (userId) => {
-  try {
-    const response = await api.get(`/workout-plans/user/${userId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
+// Operazioni di autenticazione
+export const authService = {
+  syncUser: (token) => api.post('/auth/sync', {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  }),
 };
-
-export const getWorkoutPlan = async (planId) => {
-  try {
-    const response = await api.get(`/workout-plans/${planId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const updateWorkoutPlan = async (planId, workoutPlanData) => {
-  try {
-    const response = await api.put(`/workout-plans/${planId}`, workoutPlanData);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const deleteWorkoutPlan = async (planId) => {
-  try {
-    const response = await api.delete(`/workout-plans/${planId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const updateExerciseWeight = async (planId, exerciseId, weight) => {
-  try {
-    const response = await api.patch(`/workout-plans/${planId}/exercise/${exerciseId}/peso`, { peso: weight });
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export const getExercises = async () => {
-  try {
-    const response = await api.get('/workout-plans/exercises');
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-export default api;

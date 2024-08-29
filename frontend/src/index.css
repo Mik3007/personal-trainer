@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-.home {
-  background: linear-gradient(to bottom, #030303, #1a1a1a, #333333, #4d4d4d, #666666, #808080, #999999, #b3b3b3, #cccccc, #d9d9d9, #e6e6e6);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+iframe {
+  display: block; /* Assicurati che l'iframe sia un blocco */
+}
+
+iframe::-webkit-scrollbar {
+  display: none; /* Nasconde la scrollbar in Webkit-based browsers */
+}
+
+.ig-header {
+  display: none !important; /* Nasconde l'intestazione, se il selettore è corretto */
 }

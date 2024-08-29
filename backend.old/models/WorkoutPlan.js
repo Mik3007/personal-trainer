@@ -8,13 +8,13 @@ const ExerciseSchema = new mongoose.Schema({
   note: { type: String },
   giorno: { type: String, required: true },
   pesoUtente: { type: Number }
-});
+}, { strict: false });
 
 const WorkoutPlanSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   },
   nome: { type: String, required: true },
   descrizione: { type: String },
@@ -23,4 +23,6 @@ const WorkoutPlanSchema = new mongoose.Schema({
   esercizi: [ExerciseSchema]
 }, { timestamps: true });
 
-export default mongoose.model('WorkoutPlan', WorkoutPlanSchema);
+const WorkoutPlan = mongoose.model('WorkoutPlan', WorkoutPlanSchema);
+
+export default WorkoutPlan;
