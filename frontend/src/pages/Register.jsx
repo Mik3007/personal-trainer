@@ -28,15 +28,14 @@ const Register = () => {
       setError("Le password non coincidono.");
       return;
     }
+    console.log('Dati inviati:', formData);
     try {
-        const response = await userService.register(formData);
-        if (response) {
-          navigate('/login');
-        }
-      } catch (error) {
-        console.error("Errore catturato:", error);
-        setError('Errore durante la registrazione. Riprova.');
-      }
+      const response = await userService.register(formData);
+      console.log('Registrazione riuscita:', response.data);
+      navigate('/login');
+    } catch (error) {
+      console.error('Errore durante la registrazione:', error.response ? error.response.data : error.message);
+    }
       
   };
 

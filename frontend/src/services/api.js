@@ -7,6 +7,12 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
+api.interceptors.request.use(config => {
+  console.log('Intestazioni di richiesta:', config.headers);
+  return config;
+});
+
+
 // Operazioni CRUD per gli utenti
 export const userService = {
   register: (userData) => api.post('/auth/register', userData),
@@ -20,8 +26,10 @@ export const userService = {
 export const setAuthToken = (token) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    console.log('Token impostato nelle intestazioni:', token);
   } else {
     delete api.defaults.headers.common['Authorization'];
+    console.log('Token rimosso dalle intestazioni');
   }
 };
 
@@ -32,11 +40,4 @@ export const workoutPlanService = {
   create: (planData) => api.post('/workout-plans', planData),
   update: (id, planData) => api.put(`/workout-plans/${id}`, planData),
   delete: (id) => api.delete(`/workout-plans/${id}`),
-};
-
-// Operazioni di autenticazione
-export const authService = {
-  syncUser: (token) => api.post('/auth/sync', {}, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
 };

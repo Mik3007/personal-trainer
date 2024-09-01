@@ -21,7 +21,7 @@ const Navbar = () => {
           <div>
             {isAuthenticated ? (
               <>
-                {userRole === 'admin' && <Link to="/users" className="mr-4 hover:text-gray-300">Atleti</Link>}
+                {userRole === 'admin' && <Link to="/users/all" className="mr-4 hover:text-gray-300">Atleti</Link>}
                 <Link to="/" className="mr-4 hover:text-gray-300">Home</Link>
                 <button onClick={handleLogout} className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200">
                   Logout

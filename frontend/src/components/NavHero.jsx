@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const NavHero = () => {
   const isAuthenticated = localStorage.getItem("token");
-  console.log("isAuthenticated:", isAuthenticated);
+  const userRole = localStorage.getItem("role");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -46,12 +46,9 @@ const NavHero = () => {
               <div>
                 {isAuthenticated ? (
                   <>
-                    <Link
-                      to="/profile"
-                      className="ml-4 text-white hover:text-gray-300"
-                    >
-                      Profilo
-                    </Link>
+                    {userRole === 'admin' && (
+                      <Link to="/users/all" className="ml-4 text-white hover:text-gray-300">Atleti</Link>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="ml-4 text-white hover:text-gray-300"
