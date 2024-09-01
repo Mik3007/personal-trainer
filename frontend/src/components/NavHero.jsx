@@ -1,15 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavHero = () => {
-  const isAuthenticated = localStorage.getItem("token");
-  const userRole = localStorage.getItem("role");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    console.log("Token:", token);
+    console.log("Role:", role);
+    setIsAuthenticated(!!token);
+    setUserRole(role);
+  }, []);
 
   const handleLogout = () => {
+    // Rimuovi i dati di autenticazione e il ruolo
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    window.location.href = "/login";
+  
+    // Aggiorna lo stato dell'app
+    setIsAuthenticated(false);
+    setUserRole(null);
+  
+    // Reindirizza alla pagina di login o home page
+    navigate("/login");
   };
+  
 
   return (
     <div className="relative text-white">

@@ -1,65 +1,49 @@
 import express from 'express';
 import User from '../models/User.js';
-import { ensureAdmin, ensureAuthenticated } from '../middleware/auth.js';
+import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Ottieni il profilo dell'utente corrente
+// Rotta per ottenere il profilo dell'utente autenticato
 router.get('/profile', ensureAuthenticated, async (req, res) => {
   console.log('Richiesta profilo ricevuta per utente ID:', req.user.id);
   try {
-    const user = await User.findById(req.user.id); // Usa l'ID dell'utente
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) {
-      return res.status(404).json({ message: 'Utente non trovato' });
+      return res.status(404).json({ message: 'User not found' });
     }
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: 'Errore nel recupero del profilo' });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Aggiorna il profilo dell'utente
+// Rotta per aggiornare i dati dell'utente autenticato
 router.put('/profile', ensureAuthenticated, async (req, res) => {
+  console.log('Richiesta di aggiornamento profilo per utente ID:', req.user.id);
+  const { nome, cognome, email } = req.body;
+
   try {
-    const user = await User.findByIdAndUpdate(
-      req.user.id, // Usa l'ID dell'utente
-      { $set: req.body },
-      { new: true, runValidators: true }
-    );
+    const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: 'Utente non trovato' });
+      return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
-  } catch (error) {
-    res.status(400).json({ message: 'Errore nell\'aggiornamento del profilo' });
-  }
-});
 
-// Ottieni tutti gli utenti (solo per admin)
-router.get('/users/all', ensureAuthenticated, ensureAdmin, async (req, res) => {
-  try {
-    const users = await User.find().select('-password');  // Esclude la password dai dati degli utenti
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Errore nel recupero degli utenti' });
-  }
-});
+    user.nome = nome || user.nome;
+    user.cognome = cognome || user.cognome;
+    user.email = email || user.email;
 
-
-// Promuovi un utente ad admin (solo per admin)
-router.put('/promote/:userId', ensureAuthenticated, ensureAdmin, async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.params.userId,
-      { ruolo: 'admin' },
-      { new: true }
-    );
-    if (!user) {
-      return res.status(404).json({ message: 'Utente non trovato' });
-    }
-    res.json({ message: 'Utente promosso ad admin con successo', user });
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id,
+      nome: updatedUser.nome,
+      cognome: updatedUser.cognome,
+      email: updatedUser.email,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Errore durante la promozione dell\'utente' });
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

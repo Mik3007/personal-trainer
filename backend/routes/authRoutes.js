@@ -49,7 +49,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -61,18 +60,28 @@ router.post('/login', async (req, res) => {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: '30d'
       });
+      console.log('Generazione risposta login:', { token, isAdmin: user.isAdmin });
+      const isAdmin = ['michelealtieri3007@gmail.com'].includes(user.email);
+
+      console.log('Utente autenticato:', {
+        id: user._id,
+        email: user.email,
+        isAdmin: isAdmin
+      });
 
       res.json({
         _id: user._id,
         email: user.email,
         nome: user.nome,
         cognome: user.cognome,
+        isAdmin: isAdmin,
         token
       });
     } else {
       res.status(401).json({ message: 'Credenziali non valide' });
     }
   } catch (error) {
+    console.error('Errore durante il login:', error);
     res.status(500).json({ message: 'Errore durante il login' });
   }
 });

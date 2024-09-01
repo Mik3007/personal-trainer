@@ -30,14 +30,16 @@ export const ensureAuthenticated = async (req, res, next) => {
 
 export const ensureAdmin = async (req, res, next) => {
   console.log('Verifica admin per utente:', req.user);
-  
+
   if (!req.user) {
     console.log('Utente non autenticato');
     return res.status(401).json({ message: 'User not authenticated' });
   }
 
+  // Lista di email degli amministratori
   const adminEmails = [
     'michelealtieri3007@gmail.com',
+    'altra.email.admin@example.com', // Aggiungi altre email qui
   ];
 
   if (adminEmails.includes(req.user.email)) {
@@ -48,6 +50,7 @@ export const ensureAdmin = async (req, res, next) => {
     res.status(403).json({ message: 'Accesso negato. Solo gli admin possono accedere.' });
   }
 };
+
 
 
 

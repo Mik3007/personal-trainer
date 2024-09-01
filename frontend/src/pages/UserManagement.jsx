@@ -1,6 +1,10 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { userService } from '../services/api';
+
 const UserManagement = () => {
-    const [users, setUsers] = useState([]);
-    const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
   
     useEffect(() => {
       const fetchUsers = async () => {

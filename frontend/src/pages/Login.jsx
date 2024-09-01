@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService, setAuthToken } from '../services/api';
 
-
-const Login = ({ setIsAuthenticated }) => {
+const Login = ({ setIsAuthenticated, setIsAdmin }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,33 +15,35 @@ const Login = ({ setIsAuthenticated }) => {
       ...formData,
       [e.target.name]: e.target.value,
     });
-    console.log(`Campo aggiornato: ${e.target.name}, Valore: ${e.target.value}`);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Tentativo di login con:', formData);
       const response = await userService.login(formData);
-      if (response) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('role', response.data.role); // Salva il ruolo
-        setAuthToken(response.data.token);
-        setIsAuthenticated(true);
-        console.log('Login effettuato, token salvato:', response.data.token);
-        
-        // Reindirizza in base al ruolo
-        if (response.data.role === 'admin') {
-          navigate('/users/all');
-        } else {
-          navigate('/profile');
-        }
-      }    
+      console.log('Risposta del backend al login:', response.data);
+      const { token, isAdmin } = response.data;
+  
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', isAdmin ? 'admin' : 'user');  // Salva il ruolo nel localStorage
+      setAuthToken(token);
+      setIsAuthenticated(true);
+      setIsAdmin(isAdmin);
+  
+      console.log('Ruolo salvato nel localStorage:', localStorage.getItem('role'));
+  
+      if (isAdmin) {
+        navigate('/users/all');
+      } else {
+        navigate('/profile');
+      }
     } catch (error) {
-      console.error('Errore durante il login:', error);
-      setError('Credenziali non valide. Riprova.');
+      console.error('Login failed', error);
+      setError('Login fallito, per favore riprova.');
     }
   };
+  
+
 
   return (
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto my-[250px] bg-gray-700">
