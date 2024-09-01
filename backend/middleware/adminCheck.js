@@ -2,8 +2,8 @@ import User from '../models/User.js';
 
 const adminCheck = async (req, res, next) => {
   try {
-    const user = await User.findOne({ auth0Id: req.auth.sub });
-    if (user && user.ruolo === 'admin') {
+    const user = await User.findById(req.user.id); // Usa l'ID utente interno
+    if (user && user.role === 'admin') { // Assicurati di usare il campo 'role'
       next();
     } else {
       res.status(403).json({ message: 'Accesso negato. Solo gli admin possono accedere a questa risorsa.' });

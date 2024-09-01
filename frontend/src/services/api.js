@@ -3,44 +3,35 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 console.log('API_URL:', API_URL);
 
-// Configurazione di axios con l'URL base
 const api = axios.create({
   baseURL: API_URL,
 });
 
 // Operazioni CRUD per gli utenti
 export const userService = {
-  getProfile: (token) => api.get('/users/profile', {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  updateProfile: (userData, token) => api.put('/users/profile', userData, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  getAllUsers: (token) => api.get('/users/all', {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  promoteUser: (userId, token) => api.put(`/users/promote/${userId}`, {}, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
+  register: (userData) => api.post('/auth/register', userData),
+  login: (userData) => api.post('/auth/login', userData),
+  getProfile: () => api.get('/users/profile'),
+  updateProfile: (userData) => api.put('/users/profile', userData),
+  getAllUsers: () => api.get('/users/all'),
+  promoteUser: (userId) => api.put(`/users/promote/${userId}`),
+};
+
+export const setAuthToken = (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
 };
 
 // Operazioni CRUD per i piani di allenamento
 export const workoutPlanService = {
-  getAll: (token) => api.get('/workout-plans', {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  getOne: (id, token) => api.get(`/workout-plans/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  create: (planData, token) => api.post('/workout-plans', planData, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  update: (id, planData, token) => api.put(`/workout-plans/${id}`, planData, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
-  delete: (id, token) => api.delete(`/workout-plans/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }),
+  getAll: () => api.get('/workout-plans'),
+  getOne: (id) => api.get(`/workout-plans/${id}`),
+  create: (planData) => api.post('/workout-plans', planData),
+  update: (id, planData) => api.put(`/workout-plans/${id}`, planData),
+  delete: (id) => api.delete(`/workout-plans/${id}`),
 };
 
 // Operazioni di autenticazione

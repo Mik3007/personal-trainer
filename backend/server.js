@@ -1,48 +1,28 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
+import express from 'express';
 import listEndpoints from 'express-list-endpoints';
-import connectDB from './config/database.js';
+import './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import workoutPlanRoutes from './routes/workoutPlanRoutes.js';
+import connectDB from './config/database.js';
+import cors from 'cors';
 
-dotenv.config();
+dotenv.config();  // Questo deve essere il primo import
+connectDB();
 
 const app = express();
 
-connectDB();
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: 'http://localhost:5173',  // Il dominio del frontend
+}));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/workout-plans', workoutPlanRoutes);
-
-app.get('/', (req, res) => {
-  res.send('API is running');
-});
-
-app.use((req, res) => {
-  res.status(404).send('Route not found');
-});
+app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  
-  // Crea una tabella delle rotte disponibili
-  const routes = listEndpoints(app);
-  console.log('\nAvailable Routes:');
-  console.table(routes.map(route => ({
-    path: route.path,
-    methods: route.methods.join(', ')
-  })));
+  console.table(listEndpoints(app));
 });
-
-export default app;

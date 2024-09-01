@@ -1,14 +1,14 @@
 import express from 'express';
 import User from '../models/User.js';
-import checkJwt from '../middleware/auth.js';
 import adminCheck from '../middleware/adminCheck.js';
+import { ensureAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Ottieni il profilo dell'utente corrente
-router.get('/profile', checkJwt, async (req, res) => {
+router.get('/profile', ensureAuthenticated, async (req, res) => {
   try {
-    const user = await User.findOne({ auth0Id: req.auth.sub });
+    const user = await User.findById(req.user.id); // Usa l'ID dell'utente
     if (!user) {
       return res.status(404).json({ message: 'Utente non trovato' });
     }
@@ -19,10 +19,10 @@ router.get('/profile', checkJwt, async (req, res) => {
 });
 
 // Aggiorna il profilo dell'utente
-router.put('/profile', checkJwt, async (req, res) => {
+router.put('/profile', ensureAuthenticated, async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate(
-      { auth0Id: req.auth.sub },
+    const user = await User.findByIdAndUpdate(
+      req.user.id, // Usa l'ID dell'utente
       { $set: req.body },
       { new: true, runValidators: true }
     );
@@ -36,7 +36,7 @@ router.put('/profile', checkJwt, async (req, res) => {
 });
 
 // Ottieni tutti gli utenti (solo per admin)
-router.get('/all', checkJwt, adminCheck, async (req, res) => {
+router.get('/all', ensureAuthenticated, adminCheck, async (req, res) => {
   try {
     const users = await User.find({});
     res.json(users);
@@ -46,7 +46,7 @@ router.get('/all', checkJwt, adminCheck, async (req, res) => {
 });
 
 // Promuovi un utente ad admin (solo per admin)
-router.put('/promote/:userId', checkJwt, adminCheck, async (req, res) => {
+router.put('/promote/:userId', ensureAuthenticated, adminCheck, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.params.userId,

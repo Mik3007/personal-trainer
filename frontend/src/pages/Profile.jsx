@@ -1,71 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { userService, workoutService } from '../services/api';
+import React from 'react';
+import MotivationalQuote from '../components/MotivationalQuote'; // Assicurati che questo componente esista
 
-function Profile() {
-  const { user, isAuthenticated } = useAuth0();
-  const [profile, setProfile] = useState(null);
-  const [workout, setWorkout] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    const fetchProfileAndWorkout = async () => {
-      try {
-        const profileResponse = await userService.getProfile();
-        setProfile(profileResponse.data);
-        setIsAdmin(profileResponse.data.ruolo === 'admin');
-
-        const workoutResponse = await workoutService.getAll();
-        setWorkout(workoutResponse.data[0]); // Assumiamo che ogni utente abbia una sola scheda
-      } catch (error) {
-        console.error('Error fetching profile or workout:', error);
-      }
-    };
-
-    if (isAuthenticated) {
-      fetchProfileAndWorkout();
-    }
-  }, [isAuthenticated]);
-
-  const handleWorkoutUpdate = async (updatedWorkout) => {
-    try {
-      await workoutService.update(workout._id, updatedWorkout);
-      setWorkout(updatedWorkout);
-    } catch (error) {
-      console.error('Error updating workout:', error);
-    }
-  };
-
-  if (!profile) return <div>Loading...</div>;
-
+const Profile = () => {
   return (
-    <div>
-      <h2>Benvenuto, {profile.nome} {profile.cognome}!</h2>
-      <p>Email: {profile.email}</p>
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#343434] to-[#797979] flex flex-col justify-center items-center text-white p-4">
+      <MotivationalQuote className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-center" />
 
-      <h3>La tua scheda di allenamento:</h3>
-      {workout ? (
-        <div>
-          <h4>{workout.nome}</h4>
-          <p>{workout.descrizione}</p>
-          {/* Mostra gli esercizi della scheda */}
-          {isAdmin && (
-            <button onClick={() => handleWorkoutUpdate(workout)}>
-              Modifica Scheda
-            </button>
-          )}
-        </div>
-      ) : (
-        <p>Nessuna scheda di allenamento disponibile.</p>
-      )}
-
-      {isAdmin && (
-        <button onClick={() => {/* Logica per creare una nuova scheda */}}>
-          Crea Nuova Scheda
-        </button>
-      )}
     </div>
   );
-}
+};
 
 export default Profile;

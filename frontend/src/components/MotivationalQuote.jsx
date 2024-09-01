@@ -104,7 +104,7 @@ const MotivationalQuote = () => {
   
     return (
       <div className="mt-4 md:mt-6 max-w-2xl mx-auto">
-        <p className="text-lg md:text-xl italic text-white">"{quote}"</p>
+        <p className="italic text-white text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-center">"{quote}"</p>
       </div>
     );
   };

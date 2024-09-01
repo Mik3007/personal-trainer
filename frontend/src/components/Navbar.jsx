@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
 
-const Nav = () => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+const Navbar = () => {
+  const isAuthenticated = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    window.location.href = '/login';
+  };
 
   return (
     <nav className="bg-[#343434] text-white">
@@ -15,18 +21,16 @@ const Nav = () => {
           <div>
             {isAuthenticated ? (
               <>
-                <Link to="/users">All Users</Link>
-                <Link to="/profile" className="mr-4 hover:text-gray-300">Profile</Link>
-                <Link to="/workouts" className="mr-4 hover:text-gray-300">Workouts</Link>
-                <Link to="/register" className="mr-4 hover:text-gray-300">Registra Utente</Link>
-                <button onClick={() => logout({ returnTo: window.location.origin })} className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200">
-                  Log Out
+                {userRole === 'admin' && <Link to="/users" className="mr-4 hover:text-gray-300">Atleti</Link>}
+                <Link to="/" className="mr-4 hover:text-gray-300">Home</Link>
+                <button onClick={handleLogout} className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200">
+                  Logout
                 </button>
               </>
             ) : (
-              <button onClick={() => loginWithRedirect()} className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200">
-                Log In
-              </button>
+              <Link to="/login" className="bg-white text-gray-800 px-4 py-2 rounded hover:bg-gray-200">
+                Login
+              </Link>
             )}
           </div>
         </div>
@@ -35,4 +39,4 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default Navbar;
