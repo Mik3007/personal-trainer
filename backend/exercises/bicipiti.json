@@ -1,0 +1,31 @@
+[
+    {
+      "id": "curl_su_panca_inclinata",
+      "name": "Curl su Panca Inclinata"
+    },
+    {
+      "id": "curl_hammer",
+      "name": "Curl Hammer"
+    },
+    {
+      "id": "curl_ai_cavi_bassi",
+      "name": "Curl ai Cavi Bassi"
+    },
+    {
+      "id": "curl_ai_cavi_alti",
+      "name": "Curl ai Cavi Alti"
+    },
+    {
+      "id": "curl_spider",
+      "name": "Curl Spider"
+    },
+    {
+      "id": "curl_concentrato",
+      "name": "Curl Concentrato"
+    },
+    {
+      "id": "curl_bilanciere",
+      "name": "Curl Bilanciere"
+    }
+  ]
+  

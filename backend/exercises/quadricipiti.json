@@ -1,0 +1,31 @@
+[
+    {
+      "id": "affondi",
+      "name": "Affondi"
+    },
+    {
+      "id": "leg_press",
+      "name": "Leg Press"
+    },
+    {
+      "id": "step_up",
+      "name": "Step Up"
+    },
+    {
+      "id": "squat_bulgaro",
+      "name": "Squat Bulgaro"
+    },
+    {
+      "id": "hack_squat",
+      "name": "Hack Squat"
+    },
+    {
+      "id": "front_squat",
+      "name": "Front Squat"
+    },
+    {
+      "id": "pistol_squat",
+      "name": "Pistol Squat"
+    }
+  ]
+  

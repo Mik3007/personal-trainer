@@ -1,0 +1,55 @@
+[
+    {
+      "id": "panca_piana_con_bilanciere",
+      "name": "Panca piana con bilanciere"
+    },
+    {
+      "id": "panca_piana_con_manubri",
+      "name": "Panca piana con manubri"
+    },
+    {
+      "id": "chest_press",
+      "name": "Chest press"
+    },
+    {
+      "id": "push_up",
+      "name": "Push up"
+    },
+    {
+      "id": "panca_inclinata",
+      "name": "Panca inclinata"
+    },
+    {
+      "id": "panca_inclinata_con_manubri",
+      "name": "Panca inclinata con manubri"
+    },
+    {
+      "id": "panca_declinata",
+      "name": "Panca declinata"
+    },
+    {
+      "id": "dips_alle_parallele",
+      "name": "Dips alle parallele"
+    },
+    {
+      "id": "croci_manubri",
+      "name": "Croci manubri"
+    },
+    {
+      "id": "pectoral_machine",
+      "name": "Pectoral machine"
+    },
+    {
+      "id": "piegamenti_sulle_braccia",
+      "name": "Piegamenti sulle braccia"
+    },
+    {
+      "id": "chest_press",
+      "name": "Chest press"
+    },
+    {
+      "id": "croci_ai_cavi",
+      "name": "Croci ai cavi"
+    }
+  ]
+  

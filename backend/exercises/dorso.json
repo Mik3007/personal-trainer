@@ -1,0 +1,43 @@
+[
+    {
+      "id": "pull_up",
+      "name": "Pull Up"
+    },
+    {
+      "id": "chin_up",
+      "name": "Chin Up"
+    },
+    {
+      "id": "machine",
+      "name": "La Machine"
+    },
+    {
+      "id": "rematore_manubrio",
+      "name": "Rematore manubrio"
+    },
+    {
+      "id": "rematore_bilanciere",
+      "name": "Rematore bilanciere"
+    },
+    {
+      "id": "pulley",
+      "name": "Pulley"
+    },
+    {
+      "id": "pulldown",
+      "name": "Pulldown"
+    },
+    {
+      "id": "facepull",
+      "name": "Face Pull"
+    },
+    {
+      "id": "stacco_da_terra",
+      "name": "Stacco da Terra"
+    },
+    {
+      "id": "stacchi_rumeni_manubri",
+      "name": "Stacchi Rumeni con Manubri"
+    }
+  ]
+  

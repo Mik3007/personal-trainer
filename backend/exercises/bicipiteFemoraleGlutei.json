@@ -1,0 +1,56 @@
+[
+    {
+      "id": "hip_thrust",
+      "name": "Hip Thrust"
+    },
+    {
+      "id": "glute_bridge",
+      "name": "Glute Bridge"
+    },
+    {
+      "id": "affondi_walking",
+      "name": "Affondi Walking"
+    },
+    {
+      "id": "adductor_machine",
+      "name": "Adductor Machine"
+    },
+    {
+      "id": "abductor_machine",
+      "name": "Abductor Machine"
+    },
+    {
+      "id": "glute_s_machine",
+      "name": "Glute S Machine"
+    },
+    {
+      "id": "slanci_ai_cavi",
+      "name": "Slanci ai Cavi"
+    },
+    {
+      "id": "clamshell",
+      "name": "Clamshell"
+    },
+    {
+      "id": "abduzioni_sul_fianco",
+      "name": "Abduzioni sul Fianco"
+    },
+    {
+      "id": "abduzioni_al_cavo",
+      "name": "Abduzioni al Cavo"
+    },
+    {
+        "id": "stacco_da_terra",
+        "name": "Stacco da Terra"
+      },
+      {
+        "id": "stacchi_rumeni_manubri",
+        "name": "Stacchi Rumeni Manubri"
+      },
+      {
+        "id": "leg_curl",
+        "name": "Leg Curl"
+      }
+
+  ]
+  

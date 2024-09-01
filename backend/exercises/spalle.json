@@ -1,0 +1,51 @@
+[
+    {
+      "id": "lento_avanti_manubri",
+      "name": "Lento avanti manubri"
+    },
+    {
+      "id": "lento_avanti_multipower",
+      "name": "Lento avanti multipower"
+    },
+    {
+      "id": "alzate_laterali",
+      "name": "Alzate laterali"
+    },
+    {
+      "id": "alzate_laterali_ai_cavi",
+      "name": "Alzate laterali ai cavi"
+    },
+    {
+      "id": "alzate_laterali_cavi_singolo",
+      "name": "Alzate laterali cavi singolo"
+    },
+    {
+      "id": "alzate_frontali_alternate",
+      "name": "Alzate frontali (alternate)"
+    },
+    {
+      "id": "alzate_posteriori",
+      "name": "Alzate posteriori"
+    },
+    {
+      "id": "military_press",
+      "name": "Military press"
+    },
+    {
+      "id": "tirate_al_mento",
+      "name": "Tirate al mento"
+    },
+    {
+      "id": "arnold_press",
+      "name": "Arnold press"
+    },
+    {
+      "id": "upperback",
+      "name": "Upperback"
+    },
+    {
+      "id": "alzate_posteriori_a_90",
+      "name": "Alzate posteriori a 90°"
+    }
+  ]
+  

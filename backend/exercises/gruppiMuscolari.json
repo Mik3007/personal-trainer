@@ -1,0 +1,50 @@
+{
+    "muscleGroups": [
+      {
+        "id": "petto",
+        "name": "Petto",
+        "image": "/images/chest.png"
+      },
+      {
+        "id": "dorso",
+        "name": "Dorso",
+        "image": "/images/back.png"
+      },
+      {
+        "id": "spalle",
+        "name": "Spalle",
+        "image": "/images/shoulders.png"
+      },
+      {
+        "id": "bicipiti",
+        "name": "Bicipiti",
+        "image": "/images/biceps.png"
+      },
+      {
+        "id": "tricipiti",
+        "name": "Tricipiti",
+        "image": "/images/triceps.png"
+      },
+      {
+        "id": "addome",
+        "name": "Addome",
+        "image": "/images/abs.png"
+      },
+      {
+        "id": "quadricipiti",
+        "name": "Quadricipiti",
+        "image": "/images/quadriceps.png"
+      },
+      {
+        "id": "bicipite_femorale_glutei",
+        "name": "Bicipite Femorale",
+        "image": "/images/hamstrings.png"
+      },
+      {
+        "id": "polpacci",
+        "name": "Polpacci",
+        "image": "/images/calves.png"
+      }
+    ]
+  }
+  

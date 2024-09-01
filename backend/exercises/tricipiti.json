@@ -1,0 +1,47 @@
+[
+    {
+      "id": "dip_per_tricipiti",
+      "name": "Dip per Tricipiti"
+    },
+    {
+      "id": "panca_stretta",
+      "name": "Panca Stretta"
+    },
+    {
+      "id": "push_down_lat_machine",
+      "name": "Push Down alla Lat Machine"
+    },
+    {
+      "id": "piegamenti_mani_strette",
+      "name": "Piegamenti a Terra Mani Strette"
+    },
+    {
+      "id": "push_down_con_corda",
+      "name": "Push Down con Corda"
+    },
+    {
+      "id": "kick_back",
+      "name": "Kick Back"
+    },
+    {
+      "id": "french_press_bilanciere",
+      "name": "French Press Bilanciere"
+    },
+    {
+      "id": "french_press_manubrio_in_piedi",
+      "name": "French Press Manubrio in Piedi"
+    },
+    {
+      "id": "french_press_ai_cavi",
+      "name": "French Press ai Cavi"
+    },
+    {
+      "id": "push_down_corda",
+      "name": "Push Down Corda"
+    },
+    {
+      "id": "push_down_sbarra",
+      "name": "Push Down Sbarra"
+    }
+  ]
+  
