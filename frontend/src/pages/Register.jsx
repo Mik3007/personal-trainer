@@ -36,143 +36,84 @@ const Register = () => {
     } catch (error) {
       console.error('Errore durante la registrazione:', error.response ? error.response.data : error.message);
     }
-      
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto border bg-gray-600 rounded-2xl text-white">
-      <div className="mb-5">
-        <label
-          htmlFor="nome"
-          className="block my-6 mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Nome
-        </label>
-        <input
-          type="text"
-          id="nome"
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-          required
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="cognome"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Cognome
-        </label>
-        <input
-          type="text"
-          id="cognome"
-          name="cognome"
-          value={formData.cognome}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-          required
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="email"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-          required
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-          required
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="repeatPassword"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Ripeti Password
-        </label>
-        <input
-          type="password"
-          id="repeatPassword"
-          name="repeatPassword"
-          value={formData.repeatPassword}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-          required
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="dataNascita"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Data di Nascita
-        </label>
-        <input
-          type="date"
-          id="dataNascita"
-          name="dataNascita"
-          value={formData.dataNascita}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-        />
-      </div>
-      <div className="mb-5">
-        <label
-          htmlFor="sesso"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Sesso
-        </label>
-        <select
-          id="sesso"
-          name="sesso"
-          value={formData.sesso}
-          onChange={handleChange}
-          className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-        >
-          <option value="">Seleziona...</option>
-          <option value="M">Maschio</option>
-          <option value="F">Femmina</option>
-          <option value="Altro">Altro</option>
-        </select>
-      </div>
-      <div className="flex items-start mb-5"></div>
-      <button
-        type="submit"
-        onClick={handleSubmit}
-        className="text-white bg-blue-700 hover:bg-blue-800 ..."
-      >
-        Registra
-      </button>
+    <div className="font-sans min-h-screen bg-gradient-to-b from-[#343434] to-[#787878] flex items-center justify-center">
+      <div className="w-full max-w-4xl p-8">
+        <div className="grid lg:grid-cols-2 gap-4 rounded-xl overflow-hidden shadow-2xl">
+          <div className="bg-white p-8 flex justify-center">
+            <div>
+              <img src="LogoScritta.jpg" alt="logo" className="w-68" />
+            </div>
+          </div>
 
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-    </form>
+          <div className="bg-[rgb(56,56,56)] p-8">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-8">
+                <h3 className="text-3xl font-extrabold text-white">Registrazione</h3>
+              </div>
+
+              {['nome', 'cognome', 'email', 'password', 'repeatPassword'].map((field) => (
+                <div key={field} className="mb-4">
+                  <label className="text-gray-300 text-sm mb-2 block capitalize">
+                    {field === 'repeatPassword' ? 'Ripeti Password' : field}
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      name={field}
+                      type={field.includes('password') ? 'password' : field === 'email' ? 'email' : 'text'}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      required
+                      className="w-full text-sm text-white bg-gray-700 border border-gray-600 px-4 py-3 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder={`Inserisci ${field === 'repeatPassword' ? 'nuovamente la password' : field}`}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <div className="mb-4">
+                <label className="text-gray-300 text-sm mb-2 block">Data di Nascita</label>
+                <div className="relative flex items-center">
+                  <input
+                    type="date"
+                    name="dataNascita"
+                    value={formData.dataNascita}
+                    onChange={handleChange}
+                    className="w-full text-sm text-white bg-gray-700 border border-gray-600 px-4 py-3 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="text-gray-300 text-sm mb-2 block">Sesso</label>
+                <div className="relative flex items-center">
+                  <select
+                    name="sesso"
+                    value={formData.sesso}
+                    onChange={handleChange}
+                    className="w-full text-sm text-white bg-gray-700 border border-gray-600 px-4 py-3 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Seleziona...</option>
+                    <option value="M">Maschio</option>
+                    <option value="F">Femmina</option>
+                    <option value="Altro">Altro</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <button type="submit" className="w-full shadow-xl py-3 px-6 text-sm font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                  Registrati
+                </button>
+              </div>
+              {error && <p className="text-red-400 mt-4 text-center">{error}</p>}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

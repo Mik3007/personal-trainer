@@ -12,6 +12,42 @@ api.interceptors.request.use(config => {
   return config;
 });
 
+api.interceptors.response.use(
+  response => {
+    console.log('Risposta API:', response);
+    return response;
+  },
+  error => {
+    console.error('Errore API:', error.response || error);
+    return Promise.reject(error);
+  }
+);
+
+export const setAuthToken = (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    localStorage.setItem('token', token);
+    console.log('Token impostato nelle intestazioni:', token);
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+    localStorage.removeItem('token');
+    console.log('Token rimosso dalle intestazioni');
+  }
+};
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Operazioni CRUD per gli utenti
 export const userService = {
   register: (userData) => api.post('/auth/register', userData), // Invariato
@@ -21,16 +57,9 @@ export const userService = {
   getAllUsers: () => api.get('/admin/users'), // Modificato: /users/all -> /admin/users/all
   promoteUser: (userId) => api.put(`/admin/users/promote/${userId}`), // Modificato: /users/promote -> /admin/users/promote
   getUserById: (userId) => api.get(`/admin/users/${userId}`), // Modificato: /api/users/:id -> /admin/users/:id
-};
 
-export const setAuthToken = (token) => {
-  if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    console.log('Token impostato nelle intestazioni:', token);
-  } else {
-    delete api.defaults.headers.common['Authorization'];
-    console.log('Token rimosso dalle intestazioni');
-  }
+  getBIAData: () => api.get('/bia'),
+  addBIAData: (biaData) => api.post('/bia', biaData),
 };
 
 // Operazioni CRUD per i piani di allenamento

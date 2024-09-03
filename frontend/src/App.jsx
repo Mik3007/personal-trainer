@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import UserManagement from "./pages/UserManagement";
 import Navbar from "./components/Navbar";
-import { setAuthToken } from "./services/api";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Footer from "./components/Footer";
+import { setAuthToken } from "./services/api";
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,52 +17,43 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Recupera il token e il ruolo dal localStorage
     const token = localStorage.getItem("token");
-    const adminStatus = localStorage.getItem("isAdmin");
+    const role = localStorage.getItem("role");
+
+    console.log("Token trovato:", token);
+    console.log("Role trovato:", role);
 
     if (token) {
       setAuthToken(token);
       setIsAuthenticated(true);
-      setIsAdmin(adminStatus === "true");
+      setIsAdmin(role === "admin");
+      console.log("Impostato isAuthenticated su true e isAdmin su:", role === "admin");
     } else {
       setIsAuthenticated(false);
       setIsAdmin(false);
+      console.log("Impostato isAuthenticated e isAdmin su false");
     }
-    setIsLoading(false);
+
+    setIsLoading(false); // Rimuovi il loading una volta che hai processato il token e il ruolo
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && isAdmin && location.pathname === "/login") {
-      navigate("/users/all");
-    } else if (isAuthenticated && !isAdmin && location.pathname === "/login") {
-      navigate("/profile");
+    if (!isLoading) {
+      if (isAuthenticated && isAdmin && location.pathname === "/login") {
+        navigate("/users/all");
+      } else if (isAuthenticated && !isAdmin && location.pathname === "/login") {
+        navigate("/profile");
+      }
     }
-  }, [isAuthenticated, isAdmin, location.pathname, navigate]);
-
-  const handleLogin = (token, isAdmin) => {
-    setIsAuthenticated(true);
-    setIsAdmin(isAdmin);
-    localStorage.setItem("token", token);
-    localStorage.setItem("isAdmin", isAdmin);
-    setAuthToken(token);
-
-    if (isAdmin) {
-      navigate("/users/all");
-    } else {
-      navigate("/profile");
-    }
-  };
-
-  console.log(
-    "Stato corrente - Autenticato:",
-    isAuthenticated,
-    "Admin:",
-    isAdmin
-  );
+  }, [isAuthenticated, isAdmin, location.pathname, navigate, isLoading]);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  console.log('isAdmin in AppContent:', isAdmin);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -78,43 +62,10 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route
-            path="/login"
-            element={
-              <Login
-                setIsAuthenticated={setIsAuthenticated}
-                setIsAdmin={setIsAdmin}
-              />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              isAuthenticated ? (
-                isAdmin ? (
-                  <Navigate to="/users/all" />
-                ) : (
-                  <Profile />
-                )
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/profile/:id"
-            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/users/all"
-            element={
-              isAuthenticated && isAdmin ? (
-                <UserManagement />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setIsAdmin={setIsAdmin} />} />
+          <Route path="/profile" element={isAuthenticated ? (isAdmin ? <Navigate to="/users/all" /> : <Profile isAdmin={isAdmin}/>) : <Navigate to="/login" />} />
+          <Route path="/profile/:id" element={isAuthenticated ? <Profile isAdmin={isAdmin} /> : <Navigate to="/login" />} />
+          <Route path="/users/all" element={isAuthenticated && isAdmin ? <UserManagement /> : <Navigate to="/login" />} />
         </Routes>
       </div>
       <Footer />

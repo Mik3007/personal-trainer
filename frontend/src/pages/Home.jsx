@@ -1,7 +1,6 @@
 import React from 'react';
 import NavHero from '../components/NavHero';
 // import InstagramCarousel from '../components/InstagramCarousel';
-import Footer from '../components/Footer';
 import ServiceCards from '../components/ServiceCards';
 
 const Home = () => {

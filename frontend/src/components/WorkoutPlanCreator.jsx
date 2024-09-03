@@ -6,82 +6,110 @@ import bicipiti from '../../../backend/exercises/bicipiti.json';
 import dorso from '../../../backend/exercises/dorso.json';
 import tricipiti from '../../../backend/exercises/tricipiti.json';
 import quadricipiti from '../../../backend/exercises/quadricipiti.json';
-import bicipiteFemoraleGlutei from '../../../backend/exercises/bicipiteFemoraleGlutei.json';
+import bicipiteFemoraleGlutei from '../../../backend/exercises/femorali.json';
 
-const WorkoutPlanCreator = ({ userId }) => {
-  const [days, setDays] = useState([{ id: 1, muscleGroups: {} }]);
-  const [selectedGroup, setSelectedGroup] = useState('');
+const muscleGroups = {
+  petto,
+  spalle,
+  bicipiti,
+  dorso,
+  tricipiti,
+  quadricipiti,
+  bicipiteFemoraleGlutei,
+};
+
+const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
+  const [days, setDays] = useState([{ 
+    id: 1, 
+    muscleGroups: {},
+    selectedGroup: '',
+    selectedExercise: null,
+    formData: {
+      sets: '',
+      reps: '',
+      recoveryTime: '',
+      additionalInfo: '',
+    } 
+  }]);
   const [exercises, setExercises] = useState([]);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  const [formData, setFormData] = useState({
-    sets: '',
-    reps: '',
-    recoveryTime: '',
-    additionalInfo: '',
-  });
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const muscleGroups = {
-    petto: petto,
-    spalle: spalle,
-    bicipiti: bicipiti,
-    dorso: dorso,
-    tricipiti: tricipiti,
-    quadricipiti: quadricipiti,
-    bicipiteFemoraleGlutei: bicipiteFemoraleGlutei,
-  };
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const addDay = () => {
-    setDays([...days, { id: days.length + 1, muscleGroups: {} }]);
+    setDays([...days, { 
+      id: days.length + 1, 
+      muscleGroups: {}, 
+      selectedGroup: '', 
+      selectedExercise: null,
+      formData: {
+        sets: '',
+        reps: '',
+        recoveryTime: '',
+        additionalInfo: '',
+      } 
+    }]);
   };
 
-  const handleGroupChange = (event) => {
+  const handleGroupChange = (dayId, event) => {
     const groupId = event.target.value;
-    setSelectedGroup(groupId);
+    setDays(days.map(day => 
+      day.id === dayId ? { ...day, selectedGroup: groupId, selectedExercise: null } : day
+    ));
     setExercises(muscleGroups[groupId] || []);
-    setSelectedExercise(null);
   };
 
-  const handleExerciseChange = (event) => {
+  const handleExerciseChange = (dayId, event) => {
     const exerciseId = event.target.value;
-    const exercise = exercises.find((ex) => ex.id === exerciseId);
-    setSelectedExercise(exercise);
+    setDays(days.map(day => 
+      day.id === dayId ? { ...day, selectedExercise: exercises.find(ex => ex.id === exerciseId) } : day
+    ));
+  };
+
+  const handleFormDataChange = (dayId, field, value) => {
+    setDays(days.map(day => 
+      day.id === dayId ? { ...day, formData: { ...day.formData, [field]: value } } : day
+    ));
   };
 
   const handleAddExercise = (dayId) => {
-    if (!selectedExercise) return;
+    const day = days.find(day => day.id === dayId);
+    if (!day.selectedExercise) return;
 
     const updatedDays = days.map((day) => {
       if (day.id === dayId) {
         const updatedMuscleGroups = { ...day.muscleGroups };
-        if (!updatedMuscleGroups[selectedGroup]) {
-          updatedMuscleGroups[selectedGroup] = [];
+        if (!updatedMuscleGroups[day.selectedGroup]) {
+          updatedMuscleGroups[day.selectedGroup] = [];
         }
-        updatedMuscleGroups[selectedGroup].push({
-          ...selectedExercise,
-          sets: formData.sets,
-          reps: formData.reps,
-          recoveryTime: formData.recoveryTime,
-          additionalInfo: formData.additionalInfo,
+        updatedMuscleGroups[day.selectedGroup].push({
+          ...day.selectedExercise,
+          sets: day.formData.sets,
+          reps: day.formData.reps,
+          recoveryTime: day.formData.recoveryTime,
+          additionalInfo: day.formData.additionalInfo,
         });
 
-        return {
-          ...day,
+        return { 
+          ...day, 
           muscleGroups: updatedMuscleGroups,
+          selectedGroup: '',
+          selectedExercise: null,
+          formData: {
+            sets: '',
+            reps: '',
+            recoveryTime: '',
+            additionalInfo: '',
+          }
         };
       }
       return day;
     });
 
     setDays(updatedDays);
-
-    // Resetta il form dopo l'aggiunta di un esercizio
-    setFormData({
-      sets: '',
-      reps: '',
-      recoveryTime: '',
-      additionalInfo: '',
-    });
-    setSelectedExercise(null);
   };
 
   const handleRemoveExercise = (dayId, group, exerciseIndex) => {
@@ -92,10 +120,7 @@ const WorkoutPlanCreator = ({ userId }) => {
           (_, index) => index !== exerciseIndex
         );
 
-        return {
-          ...day,
-          muscleGroups: updatedMuscleGroups,
-        };
+        return { ...day, muscleGroups: updatedMuscleGroups };
       }
       return day;
     });
@@ -106,11 +131,13 @@ const WorkoutPlanCreator = ({ userId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const workoutPlan = days.flatMap(day =>
-      Object.keys(day.muscleGroups).flatMap(groupId =>
-        day.muscleGroups[groupId].map(exercise => ({
+    const workoutPlan = days.flatMap((day) =>
+      Object.entries(day.muscleGroups).flatMap(([groupId, exercises]) =>
+        exercises.map((exercise) => ({
+          day: day.id,
           groupId,
           exerciseId: exercise.id,
+          name: exercise.name,
           sets: exercise.sets,
           reps: exercise.reps,
           recoveryTime: exercise.recoveryTime,
@@ -120,133 +147,201 @@ const WorkoutPlanCreator = ({ userId }) => {
     );
 
     const payload = {
-      userId,  // Assicurati che questo valore sia correttamente definito
-      exercises: workoutPlan,  // Assicurati che 'workoutPlan' sia un array di esercizi correttamente formattato
+      userId,
+      exercises: workoutPlan,
     };
 
     try {
       const response = await workoutPlanService.create(payload);
       console.log('Scheda creata con successo:', response.data);
+      onPlanCreated(response.data);
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+      closeModal(); // Chiude la modale dopo la creazione
     } catch (error) {
       console.error('Errore durante la creazione della scheda:', error);
+      setShowErrorPopup(true);
+      setTimeout(() => setShowErrorPopup(false), 3000);
     }
   };
 
   return (
-    <div className="workout-plan-creator max-w-full mx-auto bg-gray-800 p-8 rounded-lg shadow-lg flex flex-wrap gap-8">
-      <h2 className="text-2xl font-bold mb-6 w-full">Crea Scheda di Allenamento</h2>
-      {days.map((day, index) => (
-        <div key={day.id} className="day-section mb-4 flex-1">
-          <h3 className="text-xl font-semibold mb-2">Giorno {index + 1}</h3>
-          <select
-            onChange={handleGroupChange}
-            className="group-select block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-            value={selectedGroup}
-          >
-            <option value="">Seleziona gruppo muscolare</option>
-            <option value="petto">Petto</option>
-            <option value="spalle">Spalle</option>
-            <option value="bicipiti">Bicipiti</option>
-            <option value="dorso">Dorso</option>
-            <option value="tricipiti">Tricipiti</option>
-            <option value="quadricipiti">Quadricipiti</option>
-            <option value="bicipiteFemoraleGlutei">Bicipite Femorale e Glutei</option>
-          </select>
+    <>
+      <button 
+        onClick={openModal}
+        className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        type="button"
+      >
+        Crea Scheda di Allenamento
+      </button>
 
-          {selectedGroup && (
-            <select
-              onChange={handleExerciseChange}
-              className="exercise-select block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-              value={selectedExercise?.id || ''}
-            >
-              <option value="">Seleziona esercizio</option>
-              {exercises.map((exercise) => (
-                <option key={exercise.id} value={exercise.id}>
-                  {exercise.name}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {selectedExercise && (
-            <div>
-              <input
-                type="number"
-                placeholder="Sets"
-                value={formData.sets}
-                className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-                onChange={(e) => setFormData({ ...formData, sets: e.target.value })}
-              />
-              <input
-                type="number"
-                placeholder="Reps"
-                value={formData.reps}
-                className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-                onChange={(e) => setFormData({ ...formData, reps: e.target.value })}
-              />
-              <input
-                type="text"
-                placeholder="Tempo di recupero"
-                value={formData.recoveryTime}
-                className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-                onChange={(e) => setFormData({ ...formData, recoveryTime: e.target.value })}
-              />
-              <textarea
-                placeholder="Ulteriori informazioni"
-                value={formData.additionalInfo}
-                className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
-                onChange={(e) => setFormData({ ...formData, additionalInfo: e.target.value })}
-              />
-              <button
-                onClick={() => handleAddExercise(day.id)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      <div 
+        id="crud-modal" 
+        tabIndex="-1" 
+        aria-hidden={!isModalOpen}
+        className={`${
+          isModalOpen ? "flex" : "hidden"
+        } overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full`}
+      >
+        <div className="relative p-4 w-full max-w-4xl max-h-full">
+          <div className="relative bg-gray-800 rounded-lg shadow-lg">
+            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+              <h3 className="text-lg font-semibold text-white">
+                Crea Scheda di Allenamento
+              </h3>
+              <button 
+                onClick={closeModal} 
+                type="button" 
+                className="text-gray-400 bg-transparent hover:bg-gray-700 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
               >
-                Aggiungi Esercizio
+                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path 
+                    stroke="currentColor" 
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                  />
+                </svg>
+                <span className="sr-only">Close modal</span>
               </button>
             </div>
-          )}
 
-          <div className="exercise-list mt-4">
-            {Object.keys(day.muscleGroups).map((group, groupIdx) => (
-              <div key={groupIdx} className="mb-4">
-                <h4 className="text-lg font-semibold mb-2">
-                  {group.charAt(0).toUpperCase() + group.slice(1)} - Esercizi:
-                </h4>
-                <ol className="list-decimal list-inside">
-                  {day.muscleGroups[group].map((exercise, idx) => (
-                    <li key={`${exercise.id}-${idx}`} className="exercise-item mb-2">
-                      {exercise.name} - {exercise.sets}x{exercise.reps} ({exercise.recoveryTime})
+            <div className="p-4 md:p-5">
+              {days.map((day) => (
+                <div key={day.id} className="day-section mb-4 flex-1">
+                  <h3 className="text-xl font-semibold mb-2 text-white">Giorno {day.id}</h3>
+                  <select
+                    onChange={(e) => handleGroupChange(day.id, e)}
+                    className="group-select block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                    value={day.selectedGroup}
+                  >
+                    <option value="">Seleziona gruppo muscolare</option>
+                    <option value="petto">Petto</option>
+                    <option value="spalle">Spalle</option>
+                    <option value="bicipiti">Bicipiti</option>
+                    <option value="dorso">Dorso</option>
+                    <option value="tricipiti">Tricipiti</option>
+                    <option value="quadricipiti">Quadricipiti</option>
+                    <option value="bicipiteFemoraleGlutei">Bicipite Femorale e Glutei</option>
+                  </select>
+
+                  {day.selectedGroup && (
+                    <select
+                      onChange={(e) => handleExerciseChange(day.id, e)}
+                      className="exercise-select block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                      value={day.selectedExercise?.id || ''}
+                    >
+                      <option value="">Seleziona esercizio</option>
+                      {exercises.map((exercise) => (
+                        <option key={exercise.id} value={exercise.id}>
+                          {exercise.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {day.selectedExercise && (
+                    <div>
+                      <input
+                        type="number"
+                        placeholder="Sets"
+                        value={day.formData.sets}
+                        className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                        onChange={(e) => handleFormDataChange(day.id, 'sets', e.target.value)}
+                      />
+                      <input
+                        type="number"
+                        placeholder="Reps"
+                        value={day.formData.reps}
+                        className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                        onChange={(e) => handleFormDataChange(day.id, 'reps', e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Tempo di recupero"
+                        value={day.formData.recoveryTime}
+                        className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                        onChange={(e) => handleFormDataChange(day.id, 'recoveryTime', e.target.value)}
+                      />
+                      <textarea
+                        placeholder="Ulteriori informazioni"
+                        value={day.formData.additionalInfo}
+                        className="block w-full p-2 mb-2 bg-gray-700 text-white rounded-lg"
+                        onChange={(e) => handleFormDataChange(day.id, 'additionalInfo', e.target.value)}
+                      />
                       <button
-                        onClick={() => handleRemoveExercise(day.id, group, idx)}
-                        className="ml-4 text-red-500 hover:text-red-700"
+                        onClick={() => handleAddExercise(day.id)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                       >
-                        Rimuovi
+                        Aggiungi Esercizio
                       </button>
-                    </li>
-                  ))}
-                </ol>
+                    </div>
+                  )}
+
+                  <div className="exercise-list mt-4">
+                    {Object.entries(day.muscleGroups).map(([group, exercises]) => (
+                      <div key={group} className="mb-4">
+                        <h4 className="text-lg font-semibold mb-2 text-white">
+                          {group.charAt(0).toUpperCase() + group.slice(1)} - Esercizi:
+                        </h4>
+                        <ul className="list-disc list-inside text-white">
+                          {exercises.map((exercise, idx) => (
+                            <li key={`${exercise.id}-${idx}`} className="exercise-item mb-2">
+                              {exercise.name} - {exercise.sets}x{exercise.reps} ({exercise.recoveryTime})
+                              <button
+                                onClick={() => handleRemoveExercise(day.id, group, idx)}
+                                className="ml-4 text-red-500 hover:text-red-700"
+                              >
+                                Rimuovi
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <div className="w-full flex justify-between items-center mt-4">
+                <button
+                  onClick={addDay}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Aggiungi Giorno
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                >
+                  Crea Scheda
+                </button>
+                <button
+                  onClick={closeModal}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Annulla
+                </button>
               </div>
-            ))}
+            </div>
           </div>
         </div>
-      ))}
-
-      <div className="w-full flex justify-between items-center mt-4">
-        <button
-          onClick={addDay}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Aggiungi Giorno
-        </button>
-        <button
-          onClick={handleSubmit}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Crea Scheda
-        </button>
       </div>
-    </div>
+
+      {showSuccessPopup && (
+        <div className="fixed top-0 right-0 mt-4 mr-4 p-4 bg-green-500 text-white rounded-lg shadow-lg">
+          Scheda creata con successo!
+        </div>
+      )}
+
+      {showErrorPopup && (
+        <div className="fixed top-0 right-0 mt-4 mr-4 p-4 bg-red-500 text-white rounded-lg shadow-lg">
+          Errore durante la creazione della scheda. Riprova più tardi.
+        </div>
+      )}
+    </>
   );
 };
 
-export default WorkoutPlanCreator;
+export default WorkoutPlanCreatorModal;

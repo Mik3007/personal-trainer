@@ -101,7 +101,7 @@ export default function ServicesCards() {
                     )
                   }
                 >
-                  Richiedi Info
+                  Contatta
                 </button>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default function ServicesCards() {
                     )
                   }
                 >
-                  Richiedi Info
+                  Contata
                 </button>
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function ServicesCards() {
                     )
                   }
                 >
-                  Richiedi Info
+                  Contatta
                 </button>
               </div>
             </div>

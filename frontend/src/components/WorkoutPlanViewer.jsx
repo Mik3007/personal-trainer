@@ -1,102 +1,195 @@
-import React, { useEffect, useState } from 'react';
-import { workoutPlanService } from '../services/api';
-
-// Importa i tuoi file JSON degli esercizi
-import petto from '../../../backend/exercises/petto.json';
-import spalle from '../../../backend/exercises/spalle.json';
-import bicipiti from '../../../backend/exercises/bicipiti.json';
-import dorso from '../../../backend/exercises/dorso.json';
-import tricipiti from '../../../backend/exercises/tricipiti.json';
-import quadricipiti from '../../../backend/exercises/quadricipiti.json';
-import bicipiteFemoraleGlutei from '../../../backend/exercises/bicipiteFemoraleGlutei.json';
-
-const exercisesData = {
-  ...petto,
-  ...spalle,
-  ...bicipiti,
-  ...dorso,
-  ...tricipiti,
-  ...quadricipiti,
-  ...bicipiteFemoraleGlutei,
-};
+import React, { useState, useEffect } from "react";
+import { workoutPlanService } from "../services/api";
+import muscleGroupsData from '../../../backend/exercises/gruppiMuscolari.json';
 
 const WorkoutPlanViewer = ({ userId, isAdmin }) => {
   const [workoutPlan, setWorkoutPlan] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [expandedDays, setExpandedDays] = useState({});
 
   useEffect(() => {
     const fetchWorkoutPlan = async () => {
+      if (!userId) {
+        setError("ID utente non valido");
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
       try {
         const response = await workoutPlanService.getOne(userId);
         if (response.data) {
-          // Mappa gli ID degli esercizi ai dettagli completi
-          const detailedExercises = response.data.exercises.map(ex => {
-            const exerciseDetails = exercisesData[ex.exerciseId];
-            return {
-              ...ex,
-              ...exerciseDetails,
-            };
+          const groupedExercises = response.data.exercises.reduce(
+            (acc, ex) => {
+              const dayKey = `Giorno ${ex.day}`;
+              if (!acc[dayKey]) {
+                acc[dayKey] = {};
+              }
+              if (!acc[dayKey][ex.groupId]) {
+                acc[dayKey][ex.groupId] = [];
+              }
+              acc[dayKey][ex.groupId].push(ex);
+              return acc;
+            },
+            {}
+          );
+  
+          setWorkoutPlan({
+            _id: response.data._id,
+            exercises: groupedExercises,
           });
-          setWorkoutPlan({ ...response.data, exercises: detailedExercises });
+        } else {
+          setError("Nessuna scheda di allenamento trovata");
         }
       } catch (error) {
-        console.error('Errore nel recupero della scheda di allenamento:', error);
+        console.error("Errore nel recupero della scheda di allenamento:", error);
+        setError("Impossibile caricare la scheda di allenamento. Riprova più tardi.");
+      } finally {
+        setIsLoading(false);
       }
     };
-
+  
     fetchWorkoutPlan();
   }, [userId]);
 
+  const toggleDay = (dayKey) => {
+    setExpandedDays((prevExpandedDays) => ({
+      ...prevExpandedDays,
+      [dayKey]: !prevExpandedDays[dayKey],
+    }));
+  };
+
+  const getMuscleGroupImage = (groupId) => {
+    const muscleGroup = muscleGroupsData.muscleGroups.find(group => group.id === groupId);
+    return muscleGroup ? muscleGroup.image : '/default-muscle.webp';
+  };
+
   const handleDeletePlan = async () => {
+    if (!workoutPlan || !workoutPlan._id) {
+      console.error("ID della scheda non disponibile");
+      return;
+    }
+
     if (window.confirm("Sei sicuro di voler cancellare questa scheda?")) {
       try {
-        await workoutPlanService.delete(userId);
-        setWorkoutPlan(null);  // Aggiorna lo stato per riflettere che la scheda è stata cancellata
+        await workoutPlanService.delete(workoutPlan._id);
+        setWorkoutPlan(null);
       } catch (error) {
-        console.error('Errore durante la cancellazione della scheda di allenamento:', error);
+        console.error("Errore durante la cancellazione della scheda di allenamento:", error);
+        setError("Impossibile eliminare la scheda. Riprova più tardi.");
       }
     }
   };
 
+  if (isLoading) {
+    return <p>Caricamento della scheda di allenamento...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   if (!workoutPlan) {
-    return <p>Ancora nessuna scheda di allenamento.</p>;
+    return (
+      <div>
+        <p>Nessuna scheda di allenamento disponibile.</p>
+        {isAdmin && (
+          <p>È possibile creare una nuova scheda di allenamento.</p>
+        )}
+      </div>
+    );
   }
 
   return (
-    <div className="workout-plan-viewer max-w-full mx-auto bg-gray-800 p-8 rounded-lg shadow-lg mt-20">
-      <h2 className="text-3xl font-bold mb-6">Scheda di Allenamento</h2>
+    <div className="workout-plan-viewer max-w-full mx-auto bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-lg mt-20">
+      <h2 className="text-3xl font-bold mb-6">Workout</h2>
 
-      <div className="flex flex-wrap gap-8 justify-center">
-        {workoutPlan.exercises.map((exercise, idx) => (
-          <div 
-            key={idx} 
-            className="exercise-item p-6 bg-gray-700 rounded-lg w-[600px] mb-4"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-2xl font-semibold">
-                  Giorno {idx + 1}: {exercise.groupId.charAt(0).toUpperCase() + exercise.groupId.slice(1)}
-                </h3>
+      {/* Layout desktop e tablet */}
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Object.entries(workoutPlan.exercises).map(([dayKey, groups]) => (
+          <div key={dayKey} className="bg-gray-800 rounded-lg shadow-lg p-4">
+            <h3 className="text-3xl font-semibold mb-2 text-red-600">{dayKey}</h3>
+            {Object.entries(groups).map(([groupId, exercises]) => (
+              <div key={groupId} className="mt-4">
+                <div className="flex justify-between items-center">
+                  <p className="text-2xl">
+                    {groupId.charAt(0).toUpperCase() + groupId.slice(1)}
+                  </p>
+                  <img
+                    src={getMuscleGroupImage(groupId)}
+                    alt={groupId}
+                    className="h-20 w-20 object-cover rounded-full"
+                  />
+                </div>
+                <ul className="list-disc list-inside mt-2">
+                  {exercises.map((exercise, exIdx) => (
+                    <li key={exIdx} className="text-gray-200 mb-2 text-lg">
+                      <span className="font-semibold">{exercise.name}</span>
+                      <span className="ml-2">
+                        {exercise.sets} x {exercise.reps} rec {exercise.recoveryTime}
+                        {exercise.additionalInfo && ` (${exercise.additionalInfo})`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <img
-                src={`/images/${exercise.groupId}.jpg`}
-                alt={`${exercise.groupId}`}
-                className="h-20 w-20 object-cover rounded-full"
-              />
-            </div>
-            <div className="text-gray-200">
-              <p className="text-lg">Esercizio: {exercise.name || 'N/A'}</p>
-              <p className="text-md">Serie: {exercise.sets || 'N/A'}</p>
-              <p className="text-md">Ripetizioni: {exercise.reps || 'N/A'}</p>
-              <p className="text-md">Tempo di recupero: {exercise.recoveryTime || 'N/A'}</p>
-              {exercise.additionalInfo && (
-                <p className="text-sm mt-2">Note: {exercise.additionalInfo}</p>
-              )}
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Layout mobile */}
+      <div className="sm:hidden">
+        {Object.entries(workoutPlan.exercises).map(([dayKey, groups]) => (
+          <div key={dayKey} className="mb-4">
+            <div className="exercise-item bg-gray-700 bg-opacity-70 rounded-lg">
+              <h2
+                className="text-xl font-bold text-white cursor-pointer p-4"
+                onClick={() => toggleDay(dayKey)}
+              >
+                {dayKey}
+              </h2>
+              <div
+                className={`transition-all duration-300 ease-in-out ${
+                  expandedDays[dayKey]
+                    ? "max-h-full"
+                    : "max-h-0 overflow-hidden"
+                }`}
+              >
+                {Object.entries(groups).map(([groupId, exercises]) => (
+                  <div key={groupId} className="p-4 border-t border-gray-600">
+                    <div className="flex justify-between items-center mt-2">
+                      <p className="text-xl text-white">
+                        {groupId.charAt(0).toUpperCase() + groupId.slice(1)}
+                      </p>
+                      <img
+                        src={getMuscleGroupImage(groupId)}
+                        alt={groupId}
+                        className="h-12 w-12 object-cover text-red-600"
+                      />
+                    </div>
+                    <ul className="list-disc list-inside mt-2 text-white">
+                      {exercises.map((exercise, exIdx) => (
+                        <li key={exIdx} className="mb-2">
+                          <span className="font-semibold">{exercise.name}</span>
+                          <span className="ml-2">
+                            {exercise.sets} x {exercise.reps} rec {exercise.recoveryTime}
+                            {exercise.additionalInfo && ` (${exercise.additionalInfo})`}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {isAdmin && (
+      {isAdmin && workoutPlan && (
         <div className="mt-8 flex justify-center">
           <button
             onClick={handleDeletePlan}

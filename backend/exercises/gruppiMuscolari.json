@@ -1,50 +1,49 @@
 {
-    "muscleGroups": [
-      {
-        "id": "petto",
-        "name": "Petto",
-        "image": "/images/chest.png"
-      },
-      {
-        "id": "dorso",
-        "name": "Dorso",
-        "image": "/images/back.png"
-      },
-      {
-        "id": "spalle",
-        "name": "Spalle",
-        "image": "/images/shoulders.png"
-      },
-      {
-        "id": "bicipiti",
-        "name": "Bicipiti",
-        "image": "/images/biceps.png"
-      },
-      {
-        "id": "tricipiti",
-        "name": "Tricipiti",
-        "image": "/images/triceps.png"
-      },
-      {
-        "id": "addome",
-        "name": "Addome",
-        "image": "/images/abs.png"
-      },
-      {
-        "id": "quadricipiti",
-        "name": "Quadricipiti",
-        "image": "/images/quadriceps.png"
-      },
-      {
-        "id": "bicipite_femorale_glutei",
-        "name": "Bicipite Femorale",
-        "image": "/images/hamstrings.png"
-      },
-      {
-        "id": "polpacci",
-        "name": "Polpacci",
-        "image": "/images/calves.png"
-      }
-    ]
-  }
-  
+  "muscleGroups": [
+    {
+      "id": "petto",
+      "name": "Petto",
+      "image": "/petto.webp"
+    },
+    {
+      "id": "dorso",
+      "name": "Dorso",
+      "image": "/dorso.webp"
+    },
+    {
+      "id": "spalle",
+      "name": "Spalle",
+      "image": "/spalle.webp"
+    },
+    {
+      "id": "bicipiti",
+      "name": "Bicipiti",
+      "image": "/bicipiti.webp"
+    },
+    {
+      "id": "tricipiti",
+      "name": "Tricipiti",
+      "image": "/tricipiti.webp"
+    },
+    {
+      "id": "addome",
+      "name": "Addome",
+      "image": "/addome.webp"
+    },
+    {
+      "id": "quadricipiti",
+      "name": "Quadricipiti",
+      "image": "/quadricipiti.webp"
+    },
+    {
+      "id": "bicipite_femorale_glutei",
+      "name": "Bicipite Femorale",
+      "image": "/femorali.webp"
+    },
+    {
+      "id": "polpacci",
+      "name": "Polpacci",
+      "image": "/polpacci.webp"
+    }
+  ]
+}

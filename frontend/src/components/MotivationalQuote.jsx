@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const quotes = [
 "Il successo è la somma di piccoli sforzi ripetuti giorno dopo giorno. – Robert Collier",
 "Non smettere mai di cercare di migliorare. Il cambiamento inizia da dentro.",
@@ -103,7 +104,7 @@ const MotivationalQuote = () => {
     }, []);
   
     return (
-      <div className="mt-4 md:mt-6 max-w-2xl mx-auto">
+      <div className="md:mt-6 max-w-2xl mx-auto">
         <p className="italic text-white text-4xl md:text-4xl lg:text-5xl font-bold mb-8 text-center">"{quote}"</p>
       </div>
     );

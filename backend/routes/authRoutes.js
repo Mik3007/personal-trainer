@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { loginUser } from '../controllers/authController.js'
 
 const router = express.Router();
 
@@ -50,7 +51,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login
-router.post('/login', async (req, res) => {
+router.post('/login', loginUser), async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -74,6 +75,8 @@ router.post('/login', async (req, res) => {
         email: user.email,
         nome: user.nome,
         cognome: user.cognome,
+        email: req.body.email,
+        dataNascita: req.body.dataNascita,
         isAdmin: isAdmin,
         token
       });
@@ -84,6 +87,6 @@ router.post('/login', async (req, res) => {
     console.error('Errore durante il login:', error);
     res.status(500).json({ message: 'Errore durante il login' });
   }
-});
+};
 
 export default router;

@@ -26,6 +26,7 @@ router.post('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
 // Ottieni la scheda di un utente
 router.get('/:userId', ensureAuthenticated, async (req, res) => {
   try {
+    console.log("userId ricevuto nella richiesta:", req.params.userId);
     const workout = await Workout.findOne({ userId: req.params.userId }).sort({ createdAt: -1 });
     if (!workout) {
       return res.status(404).json({ message: 'Scheda non trovata' });
@@ -35,5 +36,28 @@ router.get('/:userId', ensureAuthenticated, async (req, res) => {
     res.status(500).json({ message: 'Errore nel recupero della scheda' });
   }
 });
+
+// Importa i tuoi middleware e controller necessari
+
+router.delete('/:workoutId', ensureAuthenticated, ensureAdmin, async (req, res) => {
+  try {
+    const workoutId = req.params.workoutId;
+    if (!workoutId) {
+      return res.status(400).json({ message: "ID della scheda non fornito" });
+    }
+
+    const result = await Workout.findByIdAndDelete(workoutId);
+    
+    if (!result) {
+      return res.status(404).json({ message: "Scheda non trovata" });
+    }
+    
+    res.status(200).json({ message: "Scheda eliminata con successo" });
+  } catch (error) {
+    console.error('Errore durante l\'eliminazione della scheda:', error);
+    res.status(500).json({ message: "Errore durante l'eliminazione della scheda", error: error.message });
+  }
+});
+
 
 export default router;
