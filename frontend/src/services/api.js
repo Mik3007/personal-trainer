@@ -57,9 +57,11 @@ export const userService = {
   getAllUsers: () => api.get('/admin/users'), // Modificato: /users/all -> /admin/users/all
   promoteUser: (userId) => api.put(`/admin/users/promote/${userId}`), // Modificato: /users/promote -> /admin/users/promote
   getUserById: (userId) => api.get(`/admin/users/${userId}`), // Modificato: /api/users/:id -> /admin/users/:id
+  deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
 
-  getBIAData: () => api.get('/bia'),
-  addBIAData: (biaData) => api.post('/bia', biaData),
+  getBIAData: (userId) => api.get(userId ? `/bia/${userId}` : '/bia'),
+  addBIAData: (userId, biaData) => api.post(userId ? `/bia/${userId}` : '/bia', biaData),
+  deleteBIAData: (userId, biaId) => api.delete(userId ? `/bia/${userId}/${biaId}` : `/bia/${biaId}`),
 };
 
 // Operazioni CRUD per i piani di allenamento

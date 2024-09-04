@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const itemVariants = {
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 24 },
+  },
+  closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+};
 
 const NavHero = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -10,8 +20,6 @@ const NavHero = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-    console.log("Token:", token);
-    console.log("Role:", role);
     setIsAuthenticated(!!token);
     setUserRole(role);
   }, []);
@@ -50,103 +58,129 @@ const NavHero = () => {
           <nav className="container mx-auto px-6 py-4">
             <div className="flex justify-between items-center">
               <Link to="/" className="flex items-center">
+              <div className="relative w-24 h-24">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#343434] via-transparent to-[#343434] rounded-full filter blur-md"></div>
                 <img
                   src="/logo.png"
                   alt="Personal Trainer App Logo"
-                  className="h-24 w-auto"
+                  className="absolute inset-0 w-full h-full object-contain"
                 />
+              </div>
               </Link>
               <div className="relative">
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => setIsOpen(!isOpen)}
                   className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
                 >
                   Menu
-                  <svg
-                    className={`ml-2 h-5 w-5 transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
+                  <motion.div
+                    initial={false}
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ originY: 0.55 }}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-                {isOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                    <div
-                      className="py-1"
-                      role="menu"
-                      aria-orientation="vertical"
-                      aria-labelledby="options-menu"
+                    <svg
+                      className="ml-2 h-5 w-5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
                     >
-                      {isAuthenticated ? (
-                        <>
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </motion.div>
+                </motion.button>
+                <motion.ul
+                  variants={{
+                    open: {
+                      clipPath: "inset(0% 0% 0% 0% round 10px)",
+                      transition: {
+                        type: "spring",
+                        bounce: 0,
+                        duration: 0.7,
+                        delayChildren: 0.3,
+                        staggerChildren: 0.05,
+                      },
+                    },
+                    closed: {
+                      clipPath: "inset(10% 50% 90% 50% round 10px)",
+                      transition: { type: "spring", bounce: 0, duration: 0.3 },
+                    },
+                  }}
+                  initial={false}
+                  animate={isOpen ? "open" : "closed"}
+                  style={{ pointerEvents: isOpen ? "auto" : "none" }}
+                  className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[#484bac] ring-1 ring-black ring-opacity-5"
+                >
+                  {isAuthenticated ? (
+                    <>
+                      {userRole === "admin" && (
+                        <motion.li variants={itemVariants}>
                           <Link
-                            to="/profile"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            to="/users/all"
+                            className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                             role="menuitem"
                           >
-                            Profilo
+                            Atleti
                           </Link>
-                          {userRole === "admin" && (
-                            <Link
-                              to="/users/all"
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              role="menuitem"
-                            >
-                              Atleti
-                            </Link>
-                          )}
-                          <a
-                            href="#contatti"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Contatti
-                          </a>
-                          <button
-                            onClick={handleLogout}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Logout
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <Link
-                            to="/register"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Registra Utente
-                          </Link>
-                          <Link
-                            to="/login"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Login
-                          </Link>
-                          <a
-                            href="#contatti"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Contatti
-                          </a>
-                        </>
+                        </motion.li>
                       )}
-                    </div>
-                  </div>
-                )}
+                      <motion.li variants={itemVariants}>
+                        <a
+                          href="#contatti"
+                          className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                          role="menuitem"
+                        >
+                          Contatti
+                        </a>
+                      </motion.li>
+                      <motion.li variants={itemVariants}>
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-blue-500"
+                          role="menuitem"
+                        >
+                          Logout
+                        </button>
+                      </motion.li>
+                    </>
+                  ) : (
+                    <>
+                      <motion.li variants={itemVariants}>
+                        <Link
+                          to="/register"
+                          className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                          role="menuitem"
+                        >
+                          Registra Utente
+                        </Link>
+                      </motion.li>
+                      <motion.li variants={itemVariants}>
+                        <Link
+                          to="/login"
+                          className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                          role="menuitem"
+                        >
+                          Login
+                        </Link>
+                      </motion.li>
+                      <motion.li variants={itemVariants}>
+                        <a
+                          href="#contatti"
+                          className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                          role="menuitem"
+                        >
+                          Contatti
+                        </a>
+                      </motion.li>
+                    </>
+                  )}
+                </motion.ul>
               </div>
             </div>
           </nav>

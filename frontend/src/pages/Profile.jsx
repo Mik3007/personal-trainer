@@ -12,6 +12,14 @@ const Profile = ({ isAdmin }) => {
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // Controllo mobile
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -63,7 +71,7 @@ const Profile = ({ isAdmin }) => {
     <div className="min-h-screen w-full bg-gradient-to-b from-[#343434] to-[#797979] flex flex-col items-center text-white pt-8">
       <MotivationalQuote className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-center" />
 
-      <h1 className="text-4xl font-bold mb-4">
+      <h1 className="text-xl font-bold mb-4">
         {profile.nome} {profile.cognome}
       </h1>
 
@@ -80,10 +88,12 @@ const Profile = ({ isAdmin }) => {
       <div className="w-full px-4">
         <WorkoutPlanViewer userId={userId} isAdmin={isAdmin} />
       </div>
-      <div className="w-full flex justify-center px-4">
-        <div className="w-full max-w-[55%] bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6 mt-20">
+
+      {/* Layout per BIA, diverso per mobile */}
+      <div className={`w-full flex justify-center px-4 ${isMobile ? 'mt-4' : 'mt-20'}`}>
+        <div className={`w-full ${isMobile ? 'max-w-full' : 'max-w-[55%]'} bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6`}>
           <h2 className="text-2xl font-bold mb-4">Analisi BIA</h2>
-          <BIAManager />
+          <BIAManager userId={isAdmin && userIdFromUrl ? userIdFromUrl : undefined} />
         </div>
       </div>
     </div>

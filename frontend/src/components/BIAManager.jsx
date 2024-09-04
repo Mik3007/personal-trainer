@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { userService } from "../services/api";
 import BIAChart from "./BIAChart";
 
-const BIAManager = () => {
+const BIAManager = ({ userId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [biaData, setBiaData] = useState([]);
   const [newBiaData, setNewBiaData] = useState({
@@ -25,11 +25,11 @@ const BIAManager = () => {
 
   useEffect(() => {
     fetchBiaData();
-  }, []);
+  }, [userId]);
 
   const fetchBiaData = async () => {
     try {
-      const response = await userService.getBIAData();
+      const response = await userService.getBIAData(userId);
       setBiaData(response.data);
     } catch (error) {
       console.error("Errore nel recupero dei dati BIA:", error);
@@ -46,10 +46,9 @@ const BIAManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userService.addBIAData(newBiaData);
+      await userService.addBIAData(userId, newBiaData);
       await fetchBiaData();
       closeModal();
-      // Reset del form
       setNewBiaData({
         weight: "",
         fatPercentage: "",
@@ -63,14 +62,27 @@ const BIAManager = () => {
     }
   };
 
+  const handleDelete = async (biaId) => {
+    if (
+      window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")
+    ) {
+      try {
+        await userService.deleteBIAData(userId, biaId);
+        await fetchBiaData();
+      } catch (error) {
+        console.error("Errore nell'eliminazione dei dati BIA:", error);
+      }
+    }
+  };
+
   return (
     <div>
       <button
         onClick={openModal}
-        className="mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
         type="button"
       >
-        {biaData.length > 0 ? "Aggiungi nuova BIA" : "Crea BIA"}
+        {biaData.length > 0 ? "Aggiungi nuova misurazione BIA" : "Inserisci prima misurazione BIA"}
       </button>
 
       {isModalOpen && (
@@ -122,6 +134,27 @@ const BIAManager = () => {
       {biaData.length > 0 && (
         <div className="mt-4">
           <BIAChart data={biaData} />
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">
+              Storico misurazioni BIA
+            </h3>
+            <ul className="space-y-2">
+              {biaData.map((bia) => (
+                <li
+                  key={bia._id}
+                  className="flex justify-between items-center bg-gray-700 p-2 rounded"
+                >
+                  <span>{new Date(bia.date).toLocaleDateString()}</span>
+                  <button
+                    onClick={() => handleDelete(bia._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                  >
+                    Elimina
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>

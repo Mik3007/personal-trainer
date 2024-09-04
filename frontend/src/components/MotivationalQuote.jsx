@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from "framer-motion";
 
 
 const quotes = [
@@ -95,19 +96,49 @@ const quotes = [
 ];
 
 const MotivationalQuote = () => {
-    const [quote, setQuote] = useState('');
-  
-    useEffect(() => {
-      const today = new Date();
-      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-      setQuote(quotes[dayOfYear % quotes.length]);
-    }, []);
-  
-    return (
-      <div className="md:mt-6 max-w-2xl mx-auto">
-        <p className="italic text-white text-4xl md:text-4xl lg:text-5xl font-bold mb-8 text-center">"{quote}"</p>
-      </div>
+  const [quote, setQuote] = useState("");
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const dayOfYear = Math.floor(
+      (today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
     );
-  };
+    const selectedQuote = quotes[dayOfYear % quotes.length] || "";
+    setQuote(selectedQuote);
+  }, []);
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingSpeed = 60;
+
+    const typeNextLetter = () => {
+      if (currentIndex < quote.length) {
+        setDisplayedText(quote.slice(0, currentIndex + 1));
+        currentIndex += 1;
+        setTimeout(typeNextLetter, typingSpeed);
+      }
+    };
+
+    if (quote) {
+      setDisplayedText("");
+      currentIndex = 0;
+      typeNextLetter();
+    }
+  }, [quote]);
+
+  return (
+    <div className="md:mt-6 max-w-2xl mx-auto">
+      <motion.p
+        className="italic text-white text-4xl md:text-4xl lg:text-5xl font-bold mb-8 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        "{displayedText}"
+      </motion.p>
+    </div>
+  );
+};
 
 export default MotivationalQuote;
