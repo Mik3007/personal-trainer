@@ -7,6 +7,9 @@ import dorso from "../../../backend/exercises/dorso.json";
 import tricipiti from "../../../backend/exercises/tricipiti.json";
 import quadricipiti from "../../../backend/exercises/quadricipiti.json";
 import femorali from "../../../backend/exercises/femorali.json";
+import addome from "../../../backend/exercises/addome.json";
+import polpacci from "../../../backend/exercises/polpacci.json";
+
 
 const muscleGroups = {
   petto,
@@ -16,6 +19,8 @@ const muscleGroups = {
   tricipiti,
   quadricipiti,
   femorali,
+  addome,
+  polpacci,
 };
 
 const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
