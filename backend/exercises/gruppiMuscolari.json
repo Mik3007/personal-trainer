@@ -45,15 +45,5 @@
       "name": "Polpacci",
       "image": "/polpacci.webp"
     }
-    {
-      "id": "polpacci",
-      "name": "Polpacci",
-      "image": "/polpacci.webp"
-    },
-    {
-      "id": "addome",
-      "name": "Addome",
-      "image": "/addome.webp"
-    },
   ]
 }
