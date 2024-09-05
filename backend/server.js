@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import workoutRoutes from "./routes/workoutRoutes.js";
+import exerciseRoutes from "./routes/exerciseRoutes.js";
 import biaRoutes from "./routes/biaRoutes.js";
 import cors from "cors";
 import listEndpoints from 'express-list-endpoints';
@@ -39,6 +40,8 @@ app.use("/api/workout-plans", workoutRoutes);
 
 // Rotte per BIA
 app.use("/api/bia", biaRoutes);
+
+app.use("/api/exercises", exerciseRoutes);
 
 const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {

@@ -71,4 +71,10 @@ export const workoutPlanService = {
   create: (planData) => api.post('/workout-plans', planData), // Invariato
   update: (id, planData) => api.put(`/workout-plans/${id}`, planData), // Invariato
   delete: (id) => api.delete(`/workout-plans/${id}`), // Invariato
+  update: (id, planData) => api.put(`/workout-plans/${id}`, planData),
+};
+
+export const exerciseService = {
+  create: (exerciseData) => api.post('/exercises', exerciseData),
+  // Puoi aggiungere altri metodi qui se necessario, come getAll, update, delete, ecc.
 };

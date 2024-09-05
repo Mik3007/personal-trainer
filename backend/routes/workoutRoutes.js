@@ -59,5 +59,27 @@ router.delete('/:workoutId', ensureAuthenticated, ensureAdmin, async (req, res) 
   }
 });
 
+router.put('/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { exercises } = req.body;
+
+    const updatedWorkout = await Workout.findByIdAndUpdate(
+      id,
+      { exercises, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedWorkout) {
+      return res.status(404).json({ message: 'Scheda non trovata' });
+    }
+
+    res.json(updatedWorkout);
+  } catch (error) {
+    console.error('Errore nella modifica della scheda:', error);
+    res.status(400).json({ message: 'Errore nella modifica della scheda' });
+  }
+});
+
 
 export default router;

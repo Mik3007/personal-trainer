@@ -5,6 +5,7 @@ import WorkoutPlanCreator from "../components/WorkoutPlanCreator";
 import MotivationalQuote from "../components/MotivationalQuote";
 import WorkoutPlanViewer from "../components/WorkoutPlanViewer";
 import BIAManager from "../components/BIAManager";
+import ExerciseCreator from "../components/ExerciseCreator";
 
 const Profile = ({ isAdmin }) => {
   const { id: userIdFromUrl } = useParams();
@@ -76,13 +77,16 @@ const Profile = ({ isAdmin }) => {
       </h1>
 
       {isAdmin && (
-        <WorkoutPlanCreator
-          userId={userId}
-          onPlanCreated={(newPlan) => {
-            console.log("New plan created:", newPlan);
-            // Aggiorna lo stato locale o ricarica la pagina se necessario
-          }}
-        />
+        <>
+          <WorkoutPlanCreator
+            userId={userId}
+            onPlanCreated={(newPlan) => {
+              console.log("New plan created:", newPlan);
+              // Aggiorna lo stato locale o ricarica la pagina se necessario
+            }}
+          />
+          <ExerciseCreator /> {/* Nuovo componente aggiunto */}
+        </>
       )}
 
       <div className="w-full px-4">
@@ -90,10 +94,20 @@ const Profile = ({ isAdmin }) => {
       </div>
 
       {/* Layout per BIA, diverso per mobile */}
-      <div className={`w-full flex justify-center px-4 ${isMobile ? 'mt-4' : 'mt-20'}`}>
-        <div className={`w-full ${isMobile ? 'max-w-full' : 'max-w-[55%]'} bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6`}>
+      <div
+        className={`w-full flex justify-center px-4 ${
+          isMobile ? "mt-4" : "mt-20"
+        }`}
+      >
+        <div
+          className={`w-full ${
+            isMobile ? "max-w-full" : "max-w-[55%]"
+          } bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6`}
+        >
           <h2 className="text-2xl font-bold mb-4">Analisi BIA</h2>
-          <BIAManager userId={isAdmin && userIdFromUrl ? userIdFromUrl : undefined} />
+          <BIAManager
+            userId={isAdmin && userIdFromUrl ? userIdFromUrl : undefined}
+          />
         </div>
       </div>
     </div>
