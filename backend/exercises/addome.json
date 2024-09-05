@@ -1,1 +1,59 @@
+[
+  {
+    "id": "crunch_a_terra",
+    "name": "Crunch a Terra"
+  },
+  {
+    "id": "crunch_con_anche_flesse_90_piedi_su_rialzo",
+    "name": "Crunch con Anche Flesse a 90° e Piedi su Rialzo"
+  },
+  {
+    "id": "crunch_con_anche_flesse_90_piedi_in_sospensione",
+    "name": "Crunch con Anche Flesse a 90° e Piedi in Sospensione"
+  },
+  {
+    "id": "crunch_inverso_sbarra",
+    "name": "Crunch Inverso alla Sbarra"
+  },
+  {
+    "id": "crunch_inverso_parallele",
+    "name": "Crunch Inverso alle Parallele"
+  },
+  {
+    "id": "crunch_inverso_panca_inclinata",
+    "name": "Crunch Inverso su Panca Inclinata"
+  },
+  {
+    "id": "crunch_inverso_panca_piana",
+    "name": "Crunch Inverso su Panca Piana"
+  },
+  {
+    "id": "sit_up_panca",
+    "name": "Sit Up su Panca"
+  },
+  {
+    "id": "sollevamento_gambe_sbarra",
+    "name": "Sollevamento Gambe alla Sbarra"
+  },
+  {
+    "id": "sollevamento_gambe_parallele",
+    "name": "Sollevamento Gambe alle Parallele"
+  },
+  {
+    "id": "sollevamento_gambe_panca",
+    "name": "Sollevamento Gambe su Panca"
+  },
+  {
+    "id": "sollevamento_ginocchia_sbarra",
+    "name": "Sollevamento Ginocchia alla Sbarra"
+  },
+  {
+    "id": "sollevamento_ginocchia_parallele",
+    "name": "Sollevamento Ginocchia alle Parallele"
+  },
+  {
+    "id": "sollevamento_ginocchia_panca",
+    "name": "Sollevamento Ginocchia su Panca"
+  }
+]
 
