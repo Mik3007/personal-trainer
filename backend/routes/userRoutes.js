@@ -6,7 +6,6 @@ const router = express.Router();
 
 // Rotta per ottenere il profilo dell'utente autenticato
 router.get('/profile', ensureAuthenticated, async (req, res) => {
-  console.log('Richiesta profilo ricevuta per utente ID:', req.user.id);
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
@@ -21,7 +20,6 @@ router.get('/profile', ensureAuthenticated, async (req, res) => {
 
 // Rotta per aggiornare i dati dell'utente autenticato
 router.put('/profile', ensureAuthenticated, async (req, res) => {
-  console.log('Richiesta di aggiornamento profilo per utente ID:', req.user.id);
   const { nome, cognome, email } = req.body;
 
   try {

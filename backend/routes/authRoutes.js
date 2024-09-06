@@ -9,11 +9,9 @@ const router = express.Router();
 // Registrazione
 router.post('/register', async (req, res) => {
   const { email, password, nome, cognome } = req.body;
-  console.log('Dati ricevuti dal client:', req.body);
 
   try {
     const userExists = await User.findOne({ email });
-    console.log('Verifica se l\'utente esiste già:', userExists);
 
     if (userExists) {
       return res.status(400).json({ message: 'Utente già registrato' });
@@ -22,7 +20,6 @@ router.post('/register', async (req, res) => {
     // Cripta la password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log('Password criptata:', hashedPassword);
 
     const user = await User.create({
       email,
@@ -30,12 +27,10 @@ router.post('/register', async (req, res) => {
       nome,
       cognome
     });
-    console.log('Utente creato:', user);
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '30d'
     });
-    console.log('Token generato:', token);
 
     res.status(201).json({
       _id: user._id,
@@ -61,14 +56,7 @@ router.post('/login', loginUser), async (req, res) => {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: '30d'
       });
-      console.log('Generazione risposta login:', { token, isAdmin: user.isAdmin });
       const isAdmin = ['michelealtieri3007@gmail.com'].includes(user.email);
-
-      console.log('Utente autenticato:', {
-        id: user._id,
-        email: user.email,
-        isAdmin: isAdmin
-      });
 
       res.json({
         _id: user._id,

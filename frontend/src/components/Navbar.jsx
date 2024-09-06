@@ -93,27 +93,36 @@ const Navbar = () => {
                 </Link>
               </motion.li>
 
-              {userRole === "admin" && (
-                <>
-                  <motion.li variants={itemVariants}>
-                    <Link
-                      to="/users/all"
-                      className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
-                    >
-                      Atleti
-                    </Link>
-                  </motion.li>
-                </>
+              {isAuthenticated && userRole === "admin" && (
+                <motion.li variants={itemVariants}>
+                  <Link
+                    to="/users/all"
+                    className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                  >
+                    Atleti
+                  </Link>
+                </motion.li>
               )}
 
-              <motion.li variants={itemVariants}>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-blue-500"
-                >
-                  Logout
-                </button>
-              </motion.li>
+              {isAuthenticated ? (
+                <motion.li variants={itemVariants}>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-blue-500"
+                  >
+                    Logout
+                  </button>
+                </motion.li>
+              ) : (
+                <motion.li variants={itemVariants}>
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                  >
+                    Login
+                  </Link>
+                </motion.li>
+              )}
             </motion.ul>
           </div>
         </div>

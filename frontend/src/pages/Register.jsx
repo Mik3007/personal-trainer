@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { userService } from "../services/api";
 
 const Register = () => {
@@ -108,6 +108,12 @@ const Register = () => {
                   Registrati
                 </button>
               </div>
+              <p className="text-sm mt-8 text-center text-gray-300">
+                Hai già un account? 
+                <Link to="/login" className="text-blue-400 font-semibold hover:underline ml-1 whitespace-nowrap">
+                  Accedi
+                </Link>
+              </p>
               {error && <p className="text-red-400 mt-4 text-center">{error}</p>}
             </form>
           </div>

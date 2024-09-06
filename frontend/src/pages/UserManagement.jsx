@@ -61,7 +61,8 @@ const UserManagement = () => {
     if (window.confirm('Sei sicuro di voler eliminare questo utente?')) {
       try {
         setIsDeleting(true);
-        await userService.deleteUser(userId); // Assicurati che l'API userService abbia un metodo deleteUser
+        const response = await userService.deleteUser(userId);
+        console.log('Risposta del server:', response);
         setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
         setFilteredUsers((prevFilteredUsers) =>
           prevFilteredUsers.filter((user) => user._id !== userId)
@@ -69,6 +70,18 @@ const UserManagement = () => {
         setIsDeleting(false);
       } catch (error) {
         console.error('Errore durante la cancellazione dell\'utente:', error);
+        if (error.response) {
+          console.error('Dati dell\'errore:', error.response.data);
+          console.error('Status dell\'errore:', error.response.status);
+          console.error('Headers dell\'errore:', error.response.headers);
+          alert(`Errore del server: ${error.response.data.message || 'Errore sconosciuto'}`);
+        } else if (error.request) {
+          console.error('Richiesta:', error.request);
+          alert('Nessuna risposta ricevuta dal server. Riprova più tardi.');
+        } else {
+          console.error('Messaggio di errore:', error.message);
+          alert('Si è verificato un errore. Riprova più tardi.');
+        }
         setIsDeleting(false);
       }
     }

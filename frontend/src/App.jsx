@@ -17,25 +17,19 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Recupera il token e il ruolo dal localStorage
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-
-    console.log("Token trovato:", token);
-    console.log("Role trovato:", role);
 
     if (token) {
       setAuthToken(token);
       setIsAuthenticated(true);
       setIsAdmin(role === "admin");
-      console.log("Impostato isAuthenticated su true e isAdmin su:", role === "admin");
     } else {
       setIsAuthenticated(false);
       setIsAdmin(false);
-      console.log("Impostato isAuthenticated e isAdmin su false");
     }
 
-    setIsLoading(false); // Rimuovi il loading una volta che hai processato il token e il ruolo
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -51,9 +45,6 @@ function AppContent() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  console.log('isAdmin in AppContent:', isAdmin);
-
 
   return (
     <div className="flex flex-col min-h-screen">

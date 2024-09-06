@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173", // Sostituisci con il dominio del tuo frontend
+    origin: "http://localhost:5173",
   })
 );
 
@@ -41,6 +41,7 @@ app.use("/api/workout-plans", workoutRoutes);
 // Rotte per BIA
 app.use("/api/bia", biaRoutes);
 
+// Rotte per la creazione dell'esercizio
 app.use("/api/exercises", exerciseRoutes);
 
 const PORT = process.env.PORT || 5000;

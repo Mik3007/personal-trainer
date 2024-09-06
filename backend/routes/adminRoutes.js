@@ -10,39 +10,38 @@ router.get('/users', ensureAuthenticated, ensureAdmin, async (req, res) => {
     const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
-    console.error(error);
+    console.error('Errore nel recupero degli utenti:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 router.get('/users/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
-    try {
-      const user = await User.findById(req.params.id).select('-password');
-      if (!user) {
-        return res.status(404).json({ msg: 'User not found' });
-      }
-      res.json(user);
-    } catch (err) {
-      console.error(err.message);
-      if (err.kind === 'ObjectId') {
-        return res.status(404).json({ msg: 'User not found' });
-      }
-      res.status(500).send('Server Error');
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
     }
-  });
+    res.json(user);
+  } catch (err) {
+    console.error('Errore nel recupero dell\'utente:', err);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 // Rotta per eliminare un utente (solo admin)
 router.delete('/users/:id', ensureAuthenticated, ensureAdmin, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    const result = await User.findByIdAndDelete(req.params.id);
+    if (!result) {
       return res.status(404).json({ message: 'User not found' });
     }
-    await user.remove();
     res.json({ message: 'User removed' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Errore nell\'eliminazione dell\'utente:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -58,7 +57,7 @@ router.put('/users/:id/admin', ensureAuthenticated, ensureAdmin, async (req, res
     await user.save();
     res.json({ message: 'User promoted to admin' });
   } catch (error) {
-    console.error(error);
+    console.error('Errore nella promozione dell\'utente ad admin:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

@@ -26,7 +26,6 @@ router.post('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
 // Ottieni la scheda di un utente
 router.get('/:userId', ensureAuthenticated, async (req, res) => {
   try {
-    console.log("userId ricevuto nella richiesta:", req.params.userId);
     const workout = await Workout.findOne({ userId: req.params.userId }).sort({ createdAt: -1 });
     if (!workout) {
       return res.status(404).json({ message: 'Scheda non trovata' });
