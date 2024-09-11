@@ -8,57 +8,32 @@ import workoutRoutes from "./routes/workoutRoutes.js";
 import exerciseRoutes from "./routes/exerciseRoutes.js";
 import biaRoutes from "./routes/biaRoutes.js";
 import cors from "cors";
-import listEndpoints from "express-list-endpoints";
-
-// Configura le variabili d'ambiente
+import listEndpoints from 'express-list-endpoints';
 dotenv.config();
-
-// Connette al database
 connectDB();
-
-// Inizializza l'applicazione Express
 const app = express();
-
-// Middleware per il parsing del body delle richieste
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Configurazione CORS per consentire richieste da origini specifiche
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://francescorauccipt.vercel.app",
-    ],
+    origin: ["http://localhost:5173", 
+            "https://francescorauccipt.vercel.app"],
     credentials: true,
   })
 );
-
-// Definizione delle rotte dell'applicazione
-
-// Rotte pubbliche per l'autenticazione
+// Rotte pubbliche
 app.use("/api/auth", authRoutes);
-
 // Rotte per utenti autenticati
 app.use("/api/users", userRoutes);
-
 // Rotte per amministratori
 app.use("/api/admin", adminRoutes);
-
 // Rotte per i piani di allenamento
 app.use("/api/workout-plans", workoutRoutes);
-
-// Rotte per la gestione delle misurazioni BIA
+// Rotte per BIA
 app.use("/api/bia", biaRoutes);
-
-// Rotte per la gestione degli esercizi
+// Rotte per la creazione dell'esercizio
 app.use("/api/exercises", exerciseRoutes);
-
-// Definizione della porta su cui il server ascolterà
 const PORT = process.env.PORT || 5000;
-
-// Avvio del server
-app.listen(PORT, () => {
-  // Stampa in console tutte le rotte definite nell'applicazione
+  app.listen(PORT, () => {
   console.table(listEndpoints(app));
 });
