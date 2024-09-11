@@ -4,28 +4,33 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useInView } from "react-intersection-observer";
 
 export default function ServicesCards() {
+  // Inizializza i controlli di animazione di Framer Motion
   const controls = useAnimation();
+  // Utilizza react-intersection-observer per rilevare quando il componente è visibile
   const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
+    triggerOnce: true, // L'animazione si attiva solo una volta
+    threshold: 0.1, // Il componente è considerato in vista quando il 10% è visibile
   });
 
+  // Effetto per avviare l'animazione quando il componente è in vista
   useEffect(() => {
     if (inView) {
       controls.start("visible");
     }
   }, [controls, inView]);
 
+  // Definizione delle varianti di animazione per il contenitore principale
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.3,
+        staggerChildren: 0.3, // Ritarda l'animazione di ogni figlio di 0.3 secondi
       },
     },
   };
 
+  // Definizione delle varianti di animazione per le singole carte
   const cardVariants = {
     hidden: { opacity: 0, x: -100 },
     visible: {
@@ -49,7 +54,7 @@ export default function ServicesCards() {
     >
       <div className="mx-auto px-4 sm:px-6 md:px-12 lg:px-24 py-12 min-h-screen bg-gradient-to-b from-[#343434] to-[#4B4B4B]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-          {/* Card 1 */}
+          {/* Card 1: Preparazione Atletica Concorsi */}
           <motion.div
             className="card bg-base-100 image-full shadow-xl h-[70vh] sm:h-[65vh] md:h-[60vh] lg:h-[80vh] transition-shadow hover:shadow-2xl"
             variants={cardVariants}
@@ -67,6 +72,7 @@ export default function ServicesCards() {
                 <h2 className="card-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
                   Preparazione Atletica Concorsi!
                 </h2>
+                {/* Elenco dei servizi offerti */}
                 <div className="flex items-start">
                   <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
@@ -92,6 +98,7 @@ export default function ServicesCards() {
                   </p>
                 </div>
               </div>
+              {/* Pulsante di contatto che apre WhatsApp */}
               <div className="card-actions justify-end">
                 <button
                   className="btn btn-primary btn-md sm:btn-lg"
@@ -108,7 +115,7 @@ export default function ServicesCards() {
             </div>
           </motion.div>
 
-          {/* Card 2 */}
+          {/* Card 2: Coaching Online */}
           <motion.div
             className="card bg-base-100 image-full shadow-xl h-[70vh] sm:h-[65vh] md:h-[60vh] lg:h-[80vh] transition-shadow hover:shadow-2xl"
             variants={cardVariants}
@@ -126,6 +133,7 @@ export default function ServicesCards() {
                 <h2 className="card-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
                   Coaching Online!
                 </h2>
+                {/* Elenco dei servizi offerti */}
                 <div className="flex items-start">
                   <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
@@ -151,6 +159,7 @@ export default function ServicesCards() {
                   </p>
                 </div>
               </div>
+              {/* Pulsante di contatto che apre WhatsApp */}
               <div className="card-actions justify-end">
                 <button
                   className="btn btn-primary btn-md sm:btn-lg"
@@ -167,7 +176,7 @@ export default function ServicesCards() {
             </div>
           </motion.div>
 
-          {/* Card 3 */}
+          {/* Card 3: Personal Training 1 To 1 */}
           <motion.div
             className="card bg-base-100 image-full shadow-xl h-[70vh] sm:h-[65vh] md:h-[60vh] lg:h-[80vh] transition-shadow hover:shadow-2xl"
             variants={cardVariants}
@@ -185,6 +194,7 @@ export default function ServicesCards() {
                 <h2 className="card-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
                   Personal Training 1 To 1!
                 </h2>
+                {/* Elenco dei servizi offerti */}
                 <div className="flex items-start">
                   <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
                   <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
@@ -210,6 +220,7 @@ export default function ServicesCards() {
                   </p>
                 </div>
               </div>
+              {/* Pulsante di contatto che apre WhatsApp */}
               <div className="card-actions justify-end">
                 <button
                   className="btn btn-primary btn-md sm:btn-lg"
