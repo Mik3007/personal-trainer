@@ -17,7 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: ["http://localhost:5173", 
-            "https://francescorauccipt.vercel.app"],
+            "https://francescorauccipt.vercel.app",
+            "https://francescorauccipt-kn0650wj6-micheles-projects-d3df038b.vercel.app"
+          ],
     credentials: true,
   })
 );
