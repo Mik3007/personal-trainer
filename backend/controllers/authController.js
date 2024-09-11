@@ -5,31 +5,30 @@ import bcrypt from 'bcryptjs';
 // Lista di email degli amministratori
 const adminEmails = [
   'michelealtieri3007@gmail.com',
-  'altra.email.admin@example.com', // Aggiungi altre email qui
+  'rauccifrancesco229@gmail.com',
 ];
 
+// Funzione per gestire il login degli utenti
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Trova l'utente in base all'email
+    // Cerca l'utente nel database tramite l'email
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Confronta la password
+    // Verifica la corrispondenza della password
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Determina se l'utente è un admin
+    // Controlla se l'utente è un amministratore
     const isAdmin = adminEmails.includes(user.email);
 
-    // Crea il token JWT includendo l'informazione `isAdmin`
+    // Genera un token JWT con le informazioni dell'utente
     const token = jwt.sign(
       {
         id: user._id,
@@ -41,9 +40,9 @@ export const loginUser = async (req, res) => {
       }
     );
 
-    // Risposta al frontend con il token e altre informazioni utili
+    // Invia la risposta al client con i dati dell'utente e il token
     res.json({
-      _id: user._id,
+      id: user._id,
       email: user.email,
       nome: user.nome,
       cognome: user.cognome,
@@ -51,6 +50,7 @@ export const loginUser = async (req, res) => {
       token: token,
     });
   } catch (error) {
+    // Gestione degli errori durante il processo di login
     console.error('Errore durante il login:', error);
     res.status(500).json({ message: 'Server error' });
   }
