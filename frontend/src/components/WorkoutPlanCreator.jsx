@@ -10,7 +10,7 @@ import femorali from "../../../backend/exercises/femorali.json";
 import addome from "../../../backend/exercises/addome.json";
 import polpacci from "../../../backend/exercises/polpacci.json";
 
-
+// Oggetto che raggruppa tutti gli esercizi per gruppo muscolare
 const muscleGroups = {
   petto,
   spalle,
@@ -24,6 +24,7 @@ const muscleGroups = {
 };
 
 const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
+  // Stato per gestire i giorni di allenamento
   const [days, setDays] = useState([
     {
       id: 1,
@@ -38,22 +39,28 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
       },
     },
   ]);
+  // Stato per gli esercizi del gruppo muscolare selezionato
   const [exercises, setExercises] = useState([]);
+  // Stati per i popup di feedback
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  // Stato per controllare l'apertura/chiusura della modale
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Funzioni per aprire e chiudere la modale
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  // Stato per gestire l'espansione dei giorni nel layout mobile
   const [expandedDays, setExpandedDays] = useState({ 1: true });
 
+  // Funzione per espandere/contrarre un giorno nel layout mobile
   const toggleDay = (dayId) => {
     setExpandedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
   };
 
+  // Funzione per aggiungere un nuovo giorno di allenamento
   const addDay = () => {
     const newDayId = days.length + 1;
-
     setDays([
       ...days,
       {
@@ -69,11 +76,11 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
         },
       },
     ]);
-
-    // Chiudi tutti gli altri giorni e apri solo il giorno appena aggiunto
+    // Espande automaticamente il nuovo giorno aggiunto
     setExpandedDays({ [newDayId]: true });
   };
 
+  // Funzione per rimuovere un giorno di allenamento
   const removeDay = (dayId) => {
     setDays(days.filter((day) => day.id !== dayId));
     setExpandedDays((prev) => {
@@ -83,6 +90,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     });
   };
 
+  // Gestisce il cambio del gruppo muscolare selezionato
   const handleGroupChange = (dayId, event) => {
     const groupId = event.target.value;
     setDays(
@@ -95,6 +103,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     setExercises(muscleGroups[groupId] || []);
   };
 
+  // Gestisce il cambio dell'esercizio selezionato
   const handleExerciseChange = (dayId, event) => {
     const exerciseId = event.target.value;
     setDays(
@@ -109,6 +118,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     );
   };
 
+  // Gestisce i cambiamenti nei campi del form (sets, reps, ecc.)
   const handleFormDataChange = (dayId, field, value) => {
     setDays(
       days.map((day) =>
@@ -119,6 +129,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     );
   };
 
+  // Aggiunge un esercizio al giorno di allenamento
   const handleAddExercise = (dayId) => {
     const day = days.find((day) => day.id === dayId);
     if (!day.selectedExercise) return;
@@ -156,6 +167,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     setDays(updatedDays);
   };
 
+  // Rimuove un esercizio dal giorno di allenamento
   const handleRemoveExercise = (dayId, group, exerciseIndex) => {
     const updatedDays = days.map((day) => {
       if (day.id === dayId) {
@@ -172,13 +184,14 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     setDays(updatedDays);
   };
 
+  // Gestisce l'invio del form per creare la scheda di allenamento
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const workoutPlan = days.flatMap((day) =>
       Object.entries(day.muscleGroups).flatMap(([groupId, exercises]) =>
         exercises.map((exercise) => {
-          // Trova l'esercizio originale nel muscleGroups per ottenere il nome
+          // Trova l'esercizio originale per ottenere il nome corretto
           const originalExercise = muscleGroups[groupId].find(
             (e) => e.id === exercise.id
           );
@@ -186,7 +199,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
             day: day.id,
             groupId,
             exerciseId: exercise.id,
-            name: originalExercise ? originalExercise.name : exercise.name, // Usa il nome dall'esercizio originale se disponibile
+            name: originalExercise ? originalExercise.name : exercise.name,
             sets: exercise.sets,
             reps: exercise.reps,
             recoveryTime: exercise.recoveryTime,
