@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userService, setAuthToken } from '../services/api';
-import MotivationalQuote from '../components/MotivationalQuote';
 
 const Login = ({ setIsAuthenticated, setIsAdmin }) => {
   const [formData, setFormData] = useState({
