@@ -144,7 +144,7 @@ const NavHero = () => {
                         </motion.li>
                       )}
                       <motion.li variants={itemVariants}>
-                        
+                        <a
                           href="#contatti"
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
@@ -184,7 +184,7 @@ const NavHero = () => {
                         </Link>
                       </motion.li>
                       <motion.li variants={itemVariants}>
-                        
+                        <a
                           href="#contatti"
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
@@ -207,7 +207,7 @@ const NavHero = () => {
               <span className="block mt-2">REPEAT</span>
             </h1>
             {/* Pulsante Instagram */}
-            
+            <a
               href="https://www.instagram.com/francesco_raucci_pt?igsh=MTV0ZHk1dGQyaGd5ZA=="
               target="_blank"
               rel="noopener noreferrer"
