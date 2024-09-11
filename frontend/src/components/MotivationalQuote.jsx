@@ -95,23 +95,33 @@ const quotes = [
 "Il corpo realizza ciò che la mente crede.",
 ];
 
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
 const MotivationalQuote = () => {
+  // Stato per memorizzare la citazione completa
   const [quote, setQuote] = useState("");
+  // Stato per memorizzare il testo attualmente visualizzato (per l'effetto di digitazione)
   const [displayedText, setDisplayedText] = useState("");
 
+  // Effetto per selezionare una citazione in base al giorno dell'anno
   useEffect(() => {
+    // Calcola il giorno dell'anno corrente
     const today = new Date();
     const dayOfYear = Math.floor(
       (today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
     );
+    // Seleziona una citazione dall'array 'quotes' basandosi sul giorno dell'anno
     const selectedQuote = quotes[dayOfYear % quotes.length] || "";
     setQuote(selectedQuote);
-  }, []);
+  }, []); // L'effetto viene eseguito solo al montaggio del componente
 
+  // Effetto per creare l'animazione di digitazione della citazione
   useEffect(() => {
     let currentIndex = 0;
-    const typingSpeed = 60;
+    const typingSpeed = 60; // Millisecondi tra ogni lettera
 
+    // Funzione ricorsiva per aggiungere una lettera alla volta
     const typeNextLetter = () => {
       if (currentIndex < quote.length) {
         setDisplayedText(quote.slice(0, currentIndex + 1));
@@ -120,12 +130,13 @@ const MotivationalQuote = () => {
       }
     };
 
+    // Avvia l'animazione di digitazione quando la citazione cambia
     if (quote) {
-      setDisplayedText("");
+      setDisplayedText(""); // Resetta il testo visualizzato
       currentIndex = 0;
       typeNextLetter();
     }
-  }, [quote]);
+  }, [quote]); // L'effetto viene rieseguito quando 'quote' cambia
 
   return (
     <div className="md:mt-6 max-w-2xl mx-auto">
@@ -141,4 +152,5 @@ const MotivationalQuote = () => {
   );
 };
 
+export default MotivationalQuote;
 export default MotivationalQuote;
