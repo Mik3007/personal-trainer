@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
+// Varianti di animazione per gli elementi del menu
 const itemVariants = {
   open: {
     opacity: 1,
@@ -12,11 +13,13 @@ const itemVariants = {
 };
 
 const NavHero = () => {
+  // Stati per gestire l'autenticazione, il ruolo dell'utente e l'apertura del menu
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Effetto per verificare l'autenticazione dell'utente al caricamento del componente
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -24,6 +27,7 @@ const NavHero = () => {
     setUserRole(role);
   }, []);
 
+  // Funzione per gestire il logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -35,6 +39,7 @@ const NavHero = () => {
   return (
     <div className="relative text-white">
       <div className="w-full h-[100vh] md:h-[100vh] relative overflow-auto">
+        {/* Sfondo dell'hero */}
         <div
           className="absolute inset-0 bg-contain bg-center"
           style={{
@@ -45,6 +50,7 @@ const NavHero = () => {
           }}
         ></div>
 
+        {/* Overlay gradiente */}
         <div
           className="absolute inset-0"
           style={{
@@ -52,21 +58,25 @@ const NavHero = () => {
           }}
         ></div>
 
+        {/* Overlay nero trasparente */}
         <div className="absolute inset-0 bg-black bg-opacity-30"></div>
 
         <div className="absolute inset-0 flex flex-col">
+          {/* Barra di navigazione */}
           <nav className="container mx-auto px-6 py-4">
             <div className="flex justify-between items-center">
+              {/* Logo */}
               <Link to="/" className="flex items-center">
-              <div className="relative w-24 h-24">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#343434] via-transparent to-[#343434] rounded-full filter blur-md"></div>
-                <img
-                  src="/logo.png"
-                  alt="Personal Trainer App Logo"
-                  className="absolute inset-0 w-full h-full object-contain"
-                />
-              </div>
+                <div className="relative w-24 h-24">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#343434] via-transparent to-[#343434] rounded-full filter blur-md"></div>
+                  <img
+                    src="/logo.png"
+                    alt="Personal Trainer App Logo"
+                    className="absolute inset-0 w-full h-full object-contain"
+                  />
+                </div>
               </Link>
+              {/* Menu dropdown */}
               <div className="relative">
                 <motion.button
                   whileTap={{ scale: 0.97 }}
@@ -80,6 +90,7 @@ const NavHero = () => {
                     transition={{ duration: 0.2 }}
                     style={{ originY: 0.55 }}
                   >
+                    {/* Icona freccia */}
                     <svg
                       className="ml-2 h-5 w-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -95,6 +106,7 @@ const NavHero = () => {
                     </svg>
                   </motion.div>
                 </motion.button>
+                {/* Lista del menu dropdown */}
                 <motion.ul
                   variants={{
                     open: {
@@ -117,6 +129,7 @@ const NavHero = () => {
                   style={{ pointerEvents: isOpen ? "auto" : "none" }}
                   className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[#484bac] ring-1 ring-black ring-opacity-5"
                 >
+                  {/* Elementi del menu per utenti autenticati */}
                   {isAuthenticated ? (
                     <>
                       {userRole === "admin" && (
@@ -131,7 +144,7 @@ const NavHero = () => {
                         </motion.li>
                       )}
                       <motion.li variants={itemVariants}>
-                        <a
+                        
                           href="#contatti"
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
@@ -150,6 +163,7 @@ const NavHero = () => {
                       </motion.li>
                     </>
                   ) : (
+                    // Elementi del menu per utenti non autenticati
                     <>
                       <motion.li variants={itemVariants}>
                         <Link
@@ -170,7 +184,7 @@ const NavHero = () => {
                         </Link>
                       </motion.li>
                       <motion.li variants={itemVariants}>
-                        <a
+                        
                           href="#contatti"
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
@@ -185,13 +199,15 @@ const NavHero = () => {
             </div>
           </nav>
 
+          {/* Contenuto principale dell'hero */}
           <div className="flex-grow flex flex-col justify-center items-center text-white text-center px-4">
             <h1 className="text-[10vw] md:text-[8vw] lg:text-[6vw] font-bold mb-4">
               <span className="block">PLAN</span>
               <span className="block mt-2">WORK</span>
               <span className="block mt-2">REPEAT</span>
             </h1>
-            <a
+            {/* Pulsante Instagram */}
+            
               href="https://www.instagram.com/francesco_raucci_pt?igsh=MTV0ZHk1dGQyaGd5ZA=="
               target="_blank"
               rel="noopener noreferrer"
