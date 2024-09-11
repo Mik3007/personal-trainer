@@ -95,9 +95,6 @@ const quotes = [
 "Il corpo realizza ciò che la mente crede.",
 ];
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-
 const MotivationalQuote = () => {
   // Stato per memorizzare la citazione completa
   const [quote, setQuote] = useState("");
@@ -120,13 +117,14 @@ const MotivationalQuote = () => {
   useEffect(() => {
     let currentIndex = 0;
     const typingSpeed = 60; // Millisecondi tra ogni lettera
+    let typingTimeout;
 
     // Funzione ricorsiva per aggiungere una lettera alla volta
     const typeNextLetter = () => {
       if (currentIndex < quote.length) {
         setDisplayedText(quote.slice(0, currentIndex + 1));
         currentIndex += 1;
-        setTimeout(typeNextLetter, typingSpeed);
+        typingTimeout = setTimeout(typeNextLetter, typingSpeed);
       }
     };
 
