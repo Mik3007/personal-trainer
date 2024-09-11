@@ -153,4 +153,3 @@ const MotivationalQuote = () => {
 };
 
 export default MotivationalQuote;
-export default MotivationalQuote;

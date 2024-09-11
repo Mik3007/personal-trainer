@@ -8,7 +8,7 @@ import workoutRoutes from "./routes/workoutRoutes.js";
 import exerciseRoutes from "./routes/exerciseRoutes.js";
 import biaRoutes from "./routes/biaRoutes.js";
 import cors from "cors";
-import listEndpoints from 'express-list-endpoints';
+import listEndpoints from "express-list-endpoints";
 
 // Configura le variabili d'ambiente
 dotenv.config();
@@ -27,8 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", 
-      "https://francescorauccipt-5uozg2jer-micheles-projects-d3df038b.vercel.app"
+      "http://localhost:5173",
+      "https://francescorauccipt.vercel.app",
     ],
     credentials: true,
   })
