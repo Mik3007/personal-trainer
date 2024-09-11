@@ -2,9 +2,13 @@ import React, { useState, useEffect } from "react";
 import { userService } from "../services/api";
 import BIAChart from "./BIAChart";
 
+// Componente per gestire le misurazioni BIA (Body Impedance Analysis)
 const BIAManager = ({ userId }) => {
+  // Stato per controllare l'apertura/chiusura del modale
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Stato per memorizzare i dati BIA dell'utente
   const [biaData, setBiaData] = useState([]);
+  // Stato per i nuovi dati BIA da inserire
   const [newBiaData, setNewBiaData] = useState({
     weight: "",
     fatPercentage: "",
@@ -14,6 +18,7 @@ const BIAManager = ({ userId }) => {
     bmi: "",
   });
 
+  // Etichette per i campi del form BIA
   const fieldLabels = {
     weight: "Peso (kg)",
     fatPercentage: "Percentuale di grasso (%)",
@@ -23,10 +28,12 @@ const BIAManager = ({ userId }) => {
     bmi: "Indice di massa corporea (BMI)",
   };
 
+  // Effetto per caricare i dati BIA all'avvio e quando cambia l'userId
   useEffect(() => {
     fetchBiaData();
   }, [userId]);
 
+  // Funzione per recuperare i dati BIA dal server
   const fetchBiaData = async () => {
     try {
       const response = await userService.getBIAData(userId);
@@ -36,19 +43,23 @@ const BIAManager = ({ userId }) => {
     }
   };
 
+  // Funzioni per gestire l'apertura e la chiusura del modale
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // Gestisce i cambiamenti negli input del form
   const handleInputChange = (e) => {
     setNewBiaData({ ...newBiaData, [e.target.name]: e.target.value });
   };
 
+  // Gestisce l'invio del form per aggiungere una nuova misurazione BIA
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await userService.addBIAData(userId, newBiaData);
       await fetchBiaData();
       closeModal();
+      // Resetta il form
       setNewBiaData({
         weight: "",
         fatPercentage: "",
@@ -62,6 +73,7 @@ const BIAManager = ({ userId }) => {
     }
   };
 
+  // Gestisce l'eliminazione di una misurazione BIA
   const handleDelete = async (biaId) => {
     if (
       window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")
@@ -77,6 +89,7 @@ const BIAManager = ({ userId }) => {
 
   return (
     <div>
+      {/* Pulsante per aprire il modale di inserimento BIA */}
       <button
         onClick={openModal}
         className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
@@ -85,6 +98,7 @@ const BIAManager = ({ userId }) => {
         {biaData.length > 0 ? "Aggiungi nuova misurazione BIA" : "Inserisci prima misurazione BIA"}
       </button>
 
+      {/* Modale per l'inserimento di nuovi dati BIA */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-start pt-20 z-50">
           <div className="relative p-5 border w-96 shadow-lg rounded-md bg-gray-800 max-h-[90vh] overflow-y-auto">
@@ -131,6 +145,7 @@ const BIAManager = ({ userId }) => {
         </div>
       )}
 
+      {/* Visualizzazione del grafico BIA e dello storico delle misurazioni */}
       {biaData.length > 0 && (
         <div className="mt-4">
           <BIAChart data={biaData} />
