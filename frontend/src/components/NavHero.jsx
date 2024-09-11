@@ -67,7 +67,7 @@ const NavHero = () => {
             <div className="flex justify-between items-center">
               {/* Logo */}
               <Link to="/" className="flex items-center">
-                <div className="relative w-24 h-24">
+                <div className="relative w-20 h-20">
                   <div className="absolute inset-0 bg-gradient-to-r from-[#343434] via-transparent to-[#343434] rounded-full filter blur-md"></div>
                   <img
                     src="/logo.png"
