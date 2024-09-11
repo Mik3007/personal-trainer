@@ -2,13 +2,10 @@ import React, { useState, useEffect } from "react";
 import { userService } from "../services/api";
 import BIAChart from "./BIAChart";
 
-// Componente per gestire le misurazioni BIA (Body Impedance Analysis)
 const BIAManager = ({ userId }) => {
-  // Stato per controllare l'apertura/chiusura del modale
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Stato per memorizzare i dati BIA dell'utente
   const [biaData, setBiaData] = useState([]);
-  // Stato per i nuovi dati BIA da inserire
+  const [hasBiaData, setHasBiaData] = useState(null); // Nuovo stato per tracciare se l'utente ha dati BIA
   const [newBiaData, setNewBiaData] = useState({
     weight: "",
     fatPercentage: "",
@@ -18,7 +15,6 @@ const BIAManager = ({ userId }) => {
     bmi: "",
   });
 
-  // Etichette per i campi del form BIA
   const fieldLabels = {
     weight: "Peso (kg)",
     fatPercentage: "Percentuale di grasso (%)",
@@ -28,12 +24,25 @@ const BIAManager = ({ userId }) => {
     bmi: "Indice di massa corporea (BMI)",
   };
 
-  // Effetto per caricare i dati BIA all'avvio e quando cambia l'userId
   useEffect(() => {
-    fetchBiaData();
+    checkBiaData();
   }, [userId]);
 
-  // Funzione per recuperare i dati BIA dal server
+  const checkBiaData = async () => {
+    try {
+      // Controlla se l'utente ha dati BIA
+      const userProfile = await userService.getUserById(userId);
+      setHasBiaData(userProfile.hasBiaData);
+      
+      if (userProfile.hasBiaData) {
+        fetchBiaData();
+      }
+    } catch (error) {
+      console.error("Errore nel controllo dei dati BIA:", error);
+      setHasBiaData(false);
+    }
+  };
+
   const fetchBiaData = async () => {
     try {
       const response = await userService.getBIAData(userId);
@@ -43,23 +52,20 @@ const BIAManager = ({ userId }) => {
     }
   };
 
-  // Funzioni per gestire l'apertura e la chiusura del modale
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  // Gestisce i cambiamenti negli input del form
   const handleInputChange = (e) => {
     setNewBiaData({ ...newBiaData, [e.target.name]: e.target.value });
   };
 
-  // Gestisce l'invio del form per aggiungere una nuova misurazione BIA
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await userService.addBIAData(userId, newBiaData);
       await fetchBiaData();
+      setHasBiaData(true);
       closeModal();
-      // Resetta il form
       setNewBiaData({
         weight: "",
         fatPercentage: "",
@@ -73,11 +79,8 @@ const BIAManager = ({ userId }) => {
     }
   };
 
-  // Gestisce l'eliminazione di una misurazione BIA
   const handleDelete = async (biaId) => {
-    if (
-      window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")
-    ) {
+    if (window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")) {
       try {
         await userService.deleteBIAData(userId, biaId);
         await fetchBiaData();
@@ -87,6 +90,10 @@ const BIAManager = ({ userId }) => {
     }
   };
 
+  if (hasBiaData === null) {
+    return <div>Caricamento...</div>;
+  }
+
   return (
     <div>
       {/* Pulsante per aprire il modale di inserimento BIA */}
@@ -95,7 +102,9 @@ const BIAManager = ({ userId }) => {
         className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
         type="button"
       >
-        {biaData.length > 0 ? "Aggiungi nuova misurazione BIA" : "Inserisci prima misurazione BIA"}
+        {biaData.length > 0
+          ? "Aggiungi nuova misurazione BIA"
+          : "Inserisci prima misurazione BIA"}
       </button>
 
       {/* Modale per l'inserimento di nuovi dati BIA */}

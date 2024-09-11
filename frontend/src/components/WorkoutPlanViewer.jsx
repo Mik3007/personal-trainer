@@ -70,16 +70,15 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
             exercises: groupedExercises,
           });
         } else {
-          setError("Nessuna scheda di allenamento trovata");
+          setWorkoutPlan(null);
         }
       } catch (error) {
-        console.error(
-          "Errore nel recupero della scheda di allenamento:",
-          error
-        );
-        setError(
-          "Impossibile caricare la scheda di allenamento. Riprova più tardi."
-        );
+        console.error("Errore nel recupero della scheda di allenamento:", error);
+        if (error.response && error.response.status === 404) {
+          setWorkoutPlan(null);
+        } else {
+          setError("Impossibile caricare la scheda di allenamento. Riprova più tardi.");
+        }
       } finally {
         setIsLoading(false);
       }

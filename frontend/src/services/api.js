@@ -48,6 +48,7 @@ export const userService = {
   getBIAData: (userId) => api.get(userId ? `/bia/${userId}` : '/bia'),
   addBIAData: (userId, biaData) => api.post(userId ? `/bia/${userId}` : '/bia', biaData),
   deleteBIAData: (userId, biaId) => api.delete(userId ? `/bia/${userId}/${biaId}` : `/bia/${biaId}`),
+  adminRegisterUser: (userData) => api.post('/admin/users/register', userData),
 };
 
 // Operazioni CRUD per i piani di allenamento

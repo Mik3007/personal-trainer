@@ -29,7 +29,7 @@ export const ensureAdmin = async (req, res, next) => {
   // Lista di email degli amministratori
   const adminEmails = [
     'michelealtieri3007@gmail.com',
-    'altra.email.admin@example.com', // Aggiungi altre email qui
+    'rauccifrancesco229@gmail.com', 
   ];
   if (adminEmails.includes(req.user.email)) {
     next();
