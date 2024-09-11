@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+// Definizione delle varianti di animazione per gli elementi del menu
 const itemVariants = {
   open: {
     opacity: 1,
@@ -12,10 +13,14 @@ const itemVariants = {
 };
 
 const Navbar = () => {
+  // Stato per controllare l'apertura/chiusura del menu
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Verifica se l'utente è autenticato e ottiene il ruolo dell'utente dal localStorage
   const isAuthenticated = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
 
+  // Funzione per gestire il logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -30,6 +35,7 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-6 py-3">
         <div className="flex justify-between items-center">
+          {/* Logo e link alla home */}
           <Link to="/" className="flex items-center">
             <img
               src="/logo.png"
@@ -38,12 +44,14 @@ const Navbar = () => {
             />
           </Link>
           <div className="relative">
+            {/* Pulsante per aprire/chiudere il menu */}
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => setIsOpen(!isOpen)}
               className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
             >
               Menu
+              {/* Icona freccia animata */}
               <motion.div
                 variants={{ open: { rotate: 180 }, closed: { rotate: 0 } }}
                 transition={{ duration: 0.2 }}
@@ -64,6 +72,7 @@ const Navbar = () => {
                 </svg>
               </motion.div>
             </motion.button>
+            {/* Menu dropdown animato */}
             <motion.ul
               variants={{
                 open: {
@@ -84,6 +93,7 @@ const Navbar = () => {
               style={{ pointerEvents: isOpen ? "auto" : "none" }}
               className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[#484bac] ring-1 ring-black ring-opacity-5"
             >
+              {/* Link alla home */}
               <motion.li variants={itemVariants}>
                 <Link
                   to="/"
@@ -93,6 +103,7 @@ const Navbar = () => {
                 </Link>
               </motion.li>
 
+              {/* Link alla pagina degli atleti (solo per admin) */}
               {isAuthenticated && userRole === "admin" && (
                 <motion.li variants={itemVariants}>
                   <Link
@@ -104,6 +115,7 @@ const Navbar = () => {
                 </motion.li>
               )}
 
+              {/* Pulsante di logout per utenti autenticati, altrimenti link al login */}
               {isAuthenticated ? (
                 <motion.li variants={itemVariants}>
                   <button
