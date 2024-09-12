@@ -119,11 +119,19 @@ const UserManagement = () => {
   const getAvatarColor = useCallback((sesso) => {
     if (!sesso) return 'bg-gray-500';
     switch (sesso.toLowerCase()) {
-      case 'maschio': return 'bg-blue-500';
-      case 'femmina': return 'bg-pink-500';
-      default: return 'bg-gray-500';
+      case 'm':
+      case 'maschio':
+        return 'bg-blue-500'; // Maschio
+      case 'f':
+      case 'femmina':
+        return 'bg-pink-500'; // Femmina
+      case 'altro':
+        return 'bg-yellow-500'; // Altro
+      default:
+        return 'bg-blue-500'; // Default grigio
     }
   }, []);
+  
 
   const handleSearchChange = useCallback((e) => {
     const term = e.target.value;
