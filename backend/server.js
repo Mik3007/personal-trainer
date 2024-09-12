@@ -35,6 +35,7 @@ app.use("/api/workout-plans", workoutRoutes);
 app.use("/api/bia", biaRoutes);
 // Rotte per la creazione dell'esercizio
 app.use("/api/exercises", exerciseRoutes);
+
 const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
   console.table(listEndpoints(app));
