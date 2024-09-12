@@ -27,21 +27,16 @@ const Profile = ({ isAdmin }) => {
       setIsLoading(true);
       setError(null);
       try {
-        console.log("Fetching profile for userIdFromUrl:", userIdFromUrl);
         let response;
         if (userIdFromUrl) {
           response = await userService.getUserById(userIdFromUrl);
-          console.log("Response from getUserById:", response);
         } else {
           response = await userService.getProfile();
-          console.log("Response from getProfile:", response);
         }
 
         if (response && response.data) {
           setProfile(response.data);
           setUserId(response.data.id || response.data._id);
-          console.log("Profile set:", response.data);
-          console.log("UserId set:", response.data.id || response.data._id);
         } else {
           throw new Error("Dati del profilo non validi nella risposta");
         }
@@ -72,7 +67,7 @@ const Profile = ({ isAdmin }) => {
     <div className="min-h-screen w-full bg-gradient-to-b from-[#343434] to-[#797979] flex flex-col items-center text-white pt-8">
       <MotivationalQuote className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-center" />
 
-      <h1 className="text-xl font-bold mb-4">
+      <h1 className="text-xl font-bold mb-4 text-[#dc2626]">
         {profile.nome} {profile.cognome}
       </h1>
 
@@ -85,7 +80,7 @@ const Profile = ({ isAdmin }) => {
               // Aggiorna lo stato locale o ricarica la pagina se necessario
             }}
           />
-          <ExerciseCreator /> {/* Nuovo componente aggiunto */}
+          <ExerciseCreator /> 
         </>
       )}
 

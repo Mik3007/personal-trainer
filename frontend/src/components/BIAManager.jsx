@@ -5,6 +5,7 @@ import BIAChart from "./BIAChart";
 const BIAManager = ({ userId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [biaData, setBiaData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [hasBiaData, setHasBiaData] = useState(null); // Nuovo stato per tracciare se l'utente ha dati BIA
   const [newBiaData, setNewBiaData] = useState({
     weight: "",
@@ -24,33 +25,79 @@ const BIAManager = ({ userId }) => {
     bmi: "Indice di massa corporea (BMI)",
   };
 
+  const fetchBiaData = async () => {
+    setLoading(true); // Mostra caricamento all'inizio
+    try {
+      const response = await userService.getBIAData(userId);
+      
+      if (response.data && response.data.length > 0) {
+        setBiaData(response.data);  // Dati corretti dall'API
+        localStorage.setItem(`biaData_${userId}`, JSON.stringify(response.data));  // Salva nel localStorage per cache
+      } else {
+        const savedData = localStorage.getItem(`biaData_${userId}`);
+        
+        if (savedData) {
+          setBiaData(JSON.parse(savedData));  // Se non ci sono dati dall'API, usa il localStorage
+        } else {
+          setBiaData([]);  // Nessun dato disponibile
+        }
+      }
+    } catch (error) {
+      console.error("Errore nel recupero dei dati BIA:", error);
+      const savedData = localStorage.getItem(`biaData_${userId}`);
+      if (savedData) {
+        setBiaData(JSON.parse(savedData));  // Se c'è un errore, usa il localStorage
+      } else {
+        setBiaData([]);  // Nessun dato disponibile
+      }
+    } finally {
+      setLoading(false); // Ferma il caricamento in ogni caso
+    }
+  };
+  
+  
+  // Chiamata per verificare e caricare i dati BIA quando il componente viene montato
   useEffect(() => {
-    checkBiaData();
+    const savedData = localStorage.getItem(`biaData_${userId}`);
+    if (savedData) {
+      setBiaData(JSON.parse(savedData));  // Prima prova a caricare i dati dalla cache locale
+    }
+    fetchBiaData();  // Poi fai la chiamata API per i dati aggiornati
   }, [userId]);
-
+  
+  
   const checkBiaData = async () => {
+    if (!userId) {
+      console.error("ID utente non definito.");
+      return;
+    }
+  
     try {
       // Controlla se l'utente ha dati BIA
       const userProfile = await userService.getUserById(userId);
       setHasBiaData(userProfile.hasBiaData);
       
+      // Se ha dati BIA, carica i dati
       if (userProfile.hasBiaData) {
-        fetchBiaData();
+        await fetchBiaData();
+      } else {
+        const savedData = localStorage.getItem(`biaData_${userId}`);
+        if (savedData) {
+          setBiaData(JSON.parse(savedData));
+        } else {
+          setBiaData([]);
+        }
       }
     } catch (error) {
       console.error("Errore nel controllo dei dati BIA:", error);
       setHasBiaData(false);
     }
   };
+  
 
-  const fetchBiaData = async () => {
-    try {
-      const response = await userService.getBIAData(userId);
-      setBiaData(response.data);
-    } catch (error) {
-      console.error("Errore nel recupero dei dati BIA:", error);
-    }
-  };
+  useEffect(() => {
+    checkBiaData();
+  }, [userId]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -63,7 +110,7 @@ const BIAManager = ({ userId }) => {
     e.preventDefault();
     try {
       await userService.addBIAData(userId, newBiaData);
-      await fetchBiaData();
+      await fetchBiaData(); // Aggiorna i dati dopo aver aggiunto una nuova misurazione
       setHasBiaData(true);
       closeModal();
       setNewBiaData({
@@ -83,7 +130,7 @@ const BIAManager = ({ userId }) => {
     if (window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")) {
       try {
         await userService.deleteBIAData(userId, biaId);
-        await fetchBiaData();
+        await fetchBiaData();  // Aggiorna i dati dopo aver eliminato una misurazione
       } catch (error) {
         console.error("Errore nell'eliminazione dei dati BIA:", error);
       }
@@ -93,6 +140,15 @@ const BIAManager = ({ userId }) => {
   if (hasBiaData === null) {
     return <div>Caricamento...</div>;
   }
+
+  if (loading) {
+    return <div>Caricamento in corso...</div>;  // Mostra il caricamento
+  }
+  
+  if (!biaData || biaData.length === 0) {
+    return <div>Nessun dato disponibile</div>;
+  }
+  
 
   return (
     <div>

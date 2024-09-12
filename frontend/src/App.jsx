@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Footer from "./components/Footer";
 import { setAuthToken } from "./services/api";
+import Spinner from "./components/Spinner";
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,7 +44,11 @@ function AppContent() {
   }, [isAuthenticated, isAdmin, location.pathname, navigate, isLoading]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner /> {/* Utilizza lo spinner */}
+      </div>
+    );
   }
 
   return (

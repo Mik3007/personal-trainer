@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom"; // Importa useLocation
 import { motion } from "framer-motion";
 
 // Definizione delle varianti di animazione per gli elementi del menu
@@ -15,10 +15,12 @@ const itemVariants = {
 const Navbar = () => {
   // Stato per controllare l'apertura/chiusura del menu
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Verifica se l'utente è autenticato e ottiene il ruolo dell'utente dal localStorage
   const isAuthenticated = localStorage.getItem("token");
   const userRole = localStorage.getItem("role");
+
+  const location = useLocation(); // Ottieni il percorso corrente
 
   // Funzione per gestire il logout
   const handleLogout = () => {
@@ -93,33 +95,46 @@ const Navbar = () => {
               style={{ pointerEvents: isOpen ? "auto" : "none" }}
               className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[#484bac] ring-1 ring-black ring-opacity-5"
             >
-              {/* Link alla home */}
               <motion.li variants={itemVariants}>
                 <Link
                   to="/"
+                  onClick={() => setIsOpen(false)} // Chiude il menu
                   className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                 >
                   Home
                 </Link>
               </motion.li>
 
-              {/* Link alla pagina degli atleti (solo per admin) */}
+              {/* Mostra "Atleti" solo se non siamo già sulla pagina "Atleti" */}
               {isAuthenticated && userRole === "admin" && (
                 <motion.li variants={itemVariants}>
-                  <Link
-                    to="/users/all"
-                    className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
-                  >
-                    Atleti
-                  </Link>
+                  {location.pathname === "/users/all" ? (
+                    <a
+                      href="#contatti" // Va al footer
+                      onClick={() => setIsOpen(false)} // Chiude il menu
+                      className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                    >
+                      Contatti
+                    </a>
+                  ) : (
+                    <Link
+                      to="/users/all"
+                      onClick={() => setIsOpen(false)} // Chiude il menu
+                      className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
+                    >
+                      Atleti
+                    </Link>
+                  )}
                 </motion.li>
               )}
 
-              {/* Pulsante di logout per utenti autenticati, altrimenti link al login */}
               {isAuthenticated ? (
                 <motion.li variants={itemVariants}>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false); // Chiude il menu
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-blue-500"
                   >
                     Logout
@@ -129,6 +144,7 @@ const Navbar = () => {
                 <motion.li variants={itemVariants}>
                   <Link
                     to="/login"
+                    onClick={() => setIsOpen(false)} // Chiude il menu
                     className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                   >
                     Login

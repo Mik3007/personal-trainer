@@ -107,6 +107,7 @@ const NavHero = () => {
                   </motion.div>
                 </motion.button>
                 {/* Lista del menu dropdown */}
+                {/* Lista del menu dropdown */}
                 <motion.ul
                   variants={{
                     open: {
@@ -129,13 +130,13 @@ const NavHero = () => {
                   style={{ pointerEvents: isOpen ? "auto" : "none" }}
                   className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-[#484bac] ring-1 ring-black ring-opacity-5"
                 >
-                  {/* Elementi del menu per utenti autenticati */}
                   {isAuthenticated ? (
                     <>
                       {userRole === "admin" && (
                         <motion.li variants={itemVariants}>
                           <Link
                             to="/users/all"
+                            onClick={() => setIsOpen(false)} // Chiude il menu
                             className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                             role="menuitem"
                           >
@@ -146,6 +147,7 @@ const NavHero = () => {
                       <motion.li variants={itemVariants}>
                         <a
                           href="#contatti"
+                          onClick={() => setIsOpen(false)} // Chiude il menu
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
                         >
@@ -154,7 +156,10 @@ const NavHero = () => {
                       </motion.li>
                       <motion.li variants={itemVariants}>
                         <button
-                          onClick={handleLogout}
+                          onClick={() => {
+                            handleLogout();
+                            setIsOpen(false); // Chiude il menu
+                          }}
                           className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
                         >
@@ -163,11 +168,11 @@ const NavHero = () => {
                       </motion.li>
                     </>
                   ) : (
-                    // Elementi del menu per utenti non autenticati
                     <>
                       <motion.li variants={itemVariants}>
                         <Link
                           to="/register"
+                          onClick={() => setIsOpen(false)} // Chiude il menu
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
                         >
@@ -177,6 +182,7 @@ const NavHero = () => {
                       <motion.li variants={itemVariants}>
                         <Link
                           to="/login"
+                          onClick={() => setIsOpen(false)} // Chiude il menu
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
                         >
@@ -186,6 +192,7 @@ const NavHero = () => {
                       <motion.li variants={itemVariants}>
                         <a
                           href="#contatti"
+                          onClick={() => setIsOpen(false)} // Chiude il menu
                           className="block px-4 py-2 text-sm text-white hover:bg-blue-500"
                           role="menuitem"
                         >

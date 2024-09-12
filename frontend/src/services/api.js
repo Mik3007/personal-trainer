@@ -58,6 +58,7 @@ export const workoutPlanService = {
   create: (planData) => api.post('/workout-plans', planData),
   update: (id, planData) => api.put(`/workout-plans/${id}`, planData),
   delete: (id) => api.delete(`/workout-plans/${id}`),
+  getAllPlans: (userId) => api.get(`/workout-plans/${userId}/all`),
 };
 
 export const exerciseService = {

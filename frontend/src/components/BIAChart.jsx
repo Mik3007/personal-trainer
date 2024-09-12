@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -12,6 +12,13 @@ import {
 
 // Componente principale per visualizzare il grafico BIA
 const BIAChart = ({ data }) => {
+  useEffect(() => {
+    // Salva i dati nel localStorage quando cambiano
+    if (data && data.length > 0) {
+      localStorage.setItem('biaData', JSON.stringify(data));
+    }
+  }, [data]);
+
   // Prepara i dati per il grafico: inverte l'ordine e formatta le date
   const chartData = [...data].reverse().map((item) => ({
     ...item,
@@ -70,7 +77,7 @@ const BIAChart = ({ data }) => {
     return (
       <div className="bg-gray-900 p-4 rounded-b-lg mt-4">
         {/* Comparazione con la BIA precedente */}
-        <h4 className="text-white mb-2">Comparazione con la BIA precedente :</h4>
+        <h4 className="text-[#dc2626]">Comparazione con la BIA precedente :</h4>
         <ul className="flex flex-wrap justify-center gap-4 text-sm mb-4">
           {payload.map((entry, index) => (
             <li key={`item-${index}`} className="flex items-center">
@@ -81,7 +88,7 @@ const BIAChart = ({ data }) => {
         </ul>
   
         {/* Comparazione con la BIA iniziale */}
-        <h4 className="text-white mb-2">Comparazione con la BIA iniziale :</h4>
+        <h4 className="text-[#dc2626] mb-2">Comparazione con la BIA iniziale :</h4>
         <ul className="flex flex-wrap justify-center gap-4 text-sm mb-8">
           {payload.map((entry, index) => (
             <li key={`item-${index}`} className="flex items-center">
@@ -98,7 +105,7 @@ const BIAChart = ({ data }) => {
     <div className="w-full bg-gray-800 rounded-lg overflow-hidden">
       <h3 className="text-xl font-semibold p-4 text-white">Andamento BIA</h3>
       {/* Contenitore responsive per il grafico */}
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={400} className="w-full sm:w-95%">
         <LineChart
           data={chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}

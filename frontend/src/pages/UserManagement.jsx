@@ -199,7 +199,7 @@ const UserManagement = () => {
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
-          placeholder="Cerca per nome o cognome"
+          placeholder="Ricerca Atleta"
           className="px-4 py-2 rounded-lg border border-gray-400 text-white w-1/2 sm:w-1/4 bg-[#1f2937]"
         />
       </div>

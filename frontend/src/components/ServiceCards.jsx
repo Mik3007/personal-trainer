@@ -165,7 +165,7 @@ export default function ServicesCards() {
                   className="btn btn-primary btn-md sm:btn-lg"
                   onClick={() =>
                     window.open(
-                      "https://wa.me/3461332408?text=Salve,%20vorrei%20ricevere%20maggiori%20informazioni.",
+                      "https://wa.me/3488358517?text=Salve,%20vorrei%20ricevere%20maggiori%20informazioni.",
                       "_blank"
                     )
                   }
@@ -226,7 +226,7 @@ export default function ServicesCards() {
                   className="btn btn-primary btn-md sm:btn-lg"
                   onClick={() =>
                     window.open(
-                      "https://wa.me/3461332408?text=Salve,%20vorrei%20ricevere%20maggiori%20informazioni.",
+                      "https://wa.me/3488358517?text=Salve,%20vorrei%20ricevere%20maggiori%20informazioni.",
                       "_blank"
                     )
                   }

@@ -18,6 +18,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
   const [expandedDays, setExpandedDays] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [editedPlan, setEditedPlan] = useState(null);
+  const [previousPlans, setPreviousPlans] = useState([]); // Stato per memorizzare le schede precedenti dell'utente
 
   const exercisesByGroup = {
     petto,
@@ -39,6 +40,17 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
     const exercises = getExercisesByGroupId(groupId);
     return exercises.find((ex) => ex.id === exerciseId);
   };
+
+  // Funzione per recuperare le schede precedenti dell'utente (fino a un massimo di 3)
+  const fetchPreviousPlans = async () => {
+    try {
+      const response = await workoutPlanService.getAllPlans(userId);
+      setPreviousPlans(response.data.slice(0, 3));  // Assicurati che 'response.data' sia l'array di schede
+    } catch (error) {
+      console.error('Errore nel recupero delle schede precedenti:', error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchWorkoutPlan = async () => {
@@ -67,17 +79,25 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
           setWorkoutPlan({
             _id: response.data._id,
+            createdAt: response.data.createdAt, // Data della scheda
             exercises: groupedExercises,
           });
         } else {
           setWorkoutPlan(null);
         }
+        // Recupera anche le schede precedenti
+        fetchPreviousPlans();
       } catch (error) {
-        console.error("Errore nel recupero della scheda di allenamento:", error);
+        console.error(
+          "Errore nel recupero della scheda di allenamento:",
+          error
+        );
         if (error.response && error.response.status === 404) {
           setWorkoutPlan(null);
         } else {
-          setError("Impossibile caricare la scheda di allenamento. Riprova più tardi.");
+          setError(
+            "Impossibile caricare la scheda di allenamento. Riprova più tardi."
+          );
         }
       } finally {
         setIsLoading(false);
@@ -179,7 +199,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
   if (!workoutPlan) {
     return (
-      <div>
+      <div className="mt-8">
         <p>Nessuna scheda di allenamento disponibile.</p>
         {isAdmin && <p>È possibile creare una nuova scheda di allenamento.</p>}
       </div>
@@ -189,7 +209,57 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
   return (
     <div className="workout-plan-viewer max-w-full mx-auto bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-lg mt-20">
       <h2 className="text-3xl font-bold mb-6 text-white">Workout</h2>
-
+  
+      {/* Visualizzazione schede precedenti */}
+      <div className="mb-4">
+        <h3 className="text-xl font-semibold text-white">Schede precedenti</h3>
+        <ul className="list-disc list-inside text-white">
+          {previousPlans.length > 0 ? (
+            previousPlans.map((plan) => (
+              <li key={plan._id}>
+                <button
+                  onClick={() => {
+                    const groupedExercises = plan.exercises.reduce((acc, ex) => {
+                      const dayKey = `Giorno ${ex.day}`;
+                      if (!acc[dayKey]) {
+                        acc[dayKey] = {};
+                      }
+                      if (!acc[dayKey][ex.groupId]) {
+                        acc[dayKey][ex.groupId] = [];
+                      }
+                      acc[dayKey][ex.groupId].push(ex);
+                      return acc;
+                    }, {});
+  
+                    setWorkoutPlan({
+                      _id: plan._id,
+                      createdAt: plan.createdAt,
+                      exercises: groupedExercises,
+                    });
+                  }}
+                  className="text-blue-400 underline"
+                >
+                  {new Date(plan.createdAt).toLocaleDateString()}
+                </button>
+              </li>
+            ))
+          ) : (
+            <p className="text-gray-400">
+              Nessuna scheda precedente disponibile.
+            </p>
+          )}
+        </ul>
+        {/* Visualizzazione della data della scheda corrente */}
+        {workoutPlan && workoutPlan.createdAt && (
+          <p className="text-white mt-4">
+            Data ultima scheda:{" "}
+            <span className="text-blue-400">
+              {new Date(workoutPlan.createdAt).toLocaleDateString()}
+            </span>
+          </p>
+        )}
+      </div>
+  
       {isEditing ? (
         // Modalità di modifica
         <div>
@@ -330,29 +400,32 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                           className="h-16 w-16 object-cover rounded-full"
                         />
                       </div>
-                      <ul className="list-disc list-inside mt-2">
-                        {exercises.map((exercise, exIdx) => (
-                          <li key={exIdx} className="text-gray-200 mb-2">
-                            <span className="font-semibold">
-                              {exercise.name || "Esercizio senza nome"}
-                            </span>
-                            <span className="ml-2">
-                              {exercise.sets} x {exercise.reps} rec{" "}
-                              {exercise.recoveryTime}
-                              {exercise.additionalInfo &&
-                                ` (${exercise.additionalInfo})`}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                      {exercises.map((exercise, exIdx) => (
+                        <div key={exIdx} className="mb-4">
+                          <p className="text-xl font-bold text-red-600">
+                            {exercise.name}
+                          </p>
+                          <p className="text-gray-300">
+                            {exercise.sets} serie di {exercise.reps} ripetizioni
+                          </p>
+                          <p className="text-gray-400">
+                            Recupero: {exercise.recoveryTime} secondi
+                          </p>
+                          {exercise.additionalInfo && (
+                            <p className="text-gray-500">
+                              Note: {exercise.additionalInfo}
+                            </p>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   );
                 })}
               </div>
             ))}
           </div>
-
-          {/* Layout mobile */}
+  
+          {/* Layout mobile - con apertura a click */}
           <div className="sm:hidden">
             {Object.entries(workoutPlan.exercises).map(([dayKey, groups]) => (
               <div key={dayKey} className="mb-4">
@@ -365,19 +438,14 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                   </h2>
                   <div
                     className={`transition-all duration-300 ease-in-out ${
-                      expandedDays[dayKey]
-                        ? "max-h-full"
-                        : "max-h-0 overflow-hidden"
+                      expandedDays[dayKey] ? "max-h-full" : "max-h-0 overflow-hidden"
                     }`}
                   >
                     {Object.entries(groups).map(([groupId, exercises]) => {
                       const { name: groupName, image: groupImage } =
                         getMuscleGroupInfo(groupId);
                       return (
-                        <div
-                          key={groupId}
-                          className="p-4 border-t border-gray-600"
-                        >
+                        <div key={groupId} className="p-4 border-t border-gray-600">
                           <div className="flex justify-between items-center mt-2">
                             <p className="text-lg text-white">{groupName}</p>
                             <img
@@ -386,21 +454,24 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                               className="h-12 w-12 object-cover rounded-full"
                             />
                           </div>
-                          <ul className="list-disc list-inside mt-2 text-white">
-                            {exercises.map((exercise, exIdx) => (
-                              <li key={exIdx} className="mb-2">
-                                <span className="font-semibold">
-                                  {exercise.name || "Esercizio senza nome"}
-                                </span>
-                                <span className="ml-2">
-                                  {exercise.sets} x {exercise.reps} rec{" "}
-                                  {exercise.recoveryTime}
-                                  {exercise.additionalInfo &&
-                                    ` (${exercise.additionalInfo})`}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
+                          {exercises.map((exercise, exIdx) => (
+                            <div key={exIdx} className="mb-4">
+                              <p className="text-lg font-bold text-red-600">
+                                {exercise.name}
+                              </p>
+                              <p className="text-gray-300">
+                                {exercise.sets} serie di {exercise.reps} ripetizioni
+                              </p>
+                              <p className="text-gray-400">
+                                Recupero: {exercise.recoveryTime} secondi
+                              </p>
+                              {exercise.additionalInfo && (
+                                <p className="text-gray-500">
+                                  Note: {exercise.additionalInfo}
+                                </p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       );
                     })}
@@ -411,7 +482,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
           </div>
         </>
       )}
-
+  
       {isAdmin && !isEditing && (
         <div className="mt-8 flex justify-center">
           <button
@@ -429,7 +500,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
         </div>
       )}
     </div>
-  );
+  ); 
 };
 
 export default WorkoutPlanViewer;
