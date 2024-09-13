@@ -613,19 +613,19 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
               <div className="w-full flex justify-between items-center mt-4">
                 <button
                   onClick={addDay}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="bg-blue-600 text-white px-2 py-2 rounded hover:bg-blue-600"
                 >
                   Aggiungi Giorno
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  className="bg-gray-600 text-white px-2 py-2 rounded hover:bg-green-600 sm:px-2 sm:py-1"
                 >
                   Crea Scheda
                 </button>
                 <button
                   onClick={closeModal}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 sm:px-2 sm:py-1"
                 >
                   Annulla
                 </button>

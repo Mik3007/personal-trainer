@@ -80,7 +80,7 @@ const Profile = ({ isAdmin }) => {
               // Aggiorna lo stato locale o ricarica la pagina se necessario
             }}
           />
-          <ExerciseCreator /> 
+          <ExerciseCreator />
         </>
       )}
 
@@ -94,15 +94,15 @@ const Profile = ({ isAdmin }) => {
           isMobile ? "mt-4" : "mt-20"
         }`}
       >
-        <div
-          className={`w-full ${
-            isMobile ? "max-w-full" : "max-w-[55%]"
-          } bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6`}
-        >
-          <h2 className="text-2xl font-bold mb-4">Analisi BIA</h2>
-          <BIAManager
-            userId={isAdmin && userIdFromUrl ? userIdFromUrl : undefined}
-          />
+        <div className="w-full flex justify-center px-4 mt-20">
+          <div
+            className={`w-full ${
+              isMobile ? "max-w-full" : "max-w-[55%]"
+            } bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6`}
+          >
+            <h2 className="text-2xl font-bold mb-4">Analisi BIA</h2>
+            <BIAManager userId={userIdFromUrl || userId} />
+          </div>
         </div>
       </div>
     </div>
