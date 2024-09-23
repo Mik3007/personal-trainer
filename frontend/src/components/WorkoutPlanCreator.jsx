@@ -323,6 +323,8 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                         <option value="tricipiti">Tricipiti</option>
                         <option value="quadricipiti">Quadricipiti</option>
                         <option value="femorali">Femorali</option>
+                        <option value="addome">Addome</option>
+                        <option value="polpacci">Polpacci</option>
                       </select>
 
                       {day.selectedGroup && (
