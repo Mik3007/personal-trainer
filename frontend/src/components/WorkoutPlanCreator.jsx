@@ -107,35 +107,37 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     );
   };
 
-  const handleFormDataChange = (dayId, field, value) => {
-    setDays(
-      days.map((day) =>
-        day.id === dayId
-          ? { ...day, formData: { ...day.formData, [field]: value } }
-          : day
-      )
-    );
-  };
+const handleAddExercise = async (dayId) => {
+  const day = days.find((d) => d.id === dayId);
+  if (!day.selectedExercise) return;
 
-  const handleAddExercise = (dayId) => {
+  try {
+    // Invia la richiesta al server per aggiungere l'esercizio
+    const response = await workoutPlanService.addExercise({
+      groupId: day.selectedGroup,
+      name: day.selectedExercise.name,
+    });
+
+    const newExercise = response.data;
+
     setDays((prevDays) => {
-      const updatedDays = prevDays.map((day) => {
-        if (day.id === dayId) {
-          const updatedMuscleGroups = { ...day.muscleGroups };
+      const updatedDays = prevDays.map((d) => {
+        if (d.id === dayId) {
+          const updatedMuscleGroups = { ...d.muscleGroups };
           if (!updatedMuscleGroups[day.selectedGroup]) {
             updatedMuscleGroups[day.selectedGroup] = [];
           }
           updatedMuscleGroups[day.selectedGroup].push({
-            ...day.selectedExercise,
-            uniqueId: `${day.id}-${day.selectedGroup}-${exerciseCounter}`,
-            sets: day.formData.sets,
-            reps: day.formData.reps,
-            recoveryTime: day.formData.recoveryTime,
-            additionalInfo: day.formData.additionalInfo,
+            ...newExercise,
+            uniqueId: `${d.id}-${day.selectedGroup}-${exerciseCounter}`,
+            sets: d.formData.sets,
+            reps: d.formData.reps,
+            recoveryTime: d.formData.recoveryTime,
+            additionalInfo: d.formData.additionalInfo,
           });
 
           return {
-            ...day,
+            ...d,
             muscleGroups: updatedMuscleGroups,
             selectedGroup: "",
             selectedExercise: null,
@@ -147,13 +149,22 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
             },
           };
         }
-        return day;
+        return d;
       });
 
       setExerciseCounter((prev) => prev + 1);
       return updatedDays;
     });
-  };
+
+    // Aggiorna l'array degli esercizi con il nuovo esercizio
+    setExercises((prevExercises) => [...prevExercises, newExercise]);
+
+    console.log("Esercizio aggiunto con successo:", newExercise);
+  } catch (error) {
+    console.error("Errore durante l'aggiunta dell'esercizio:", error);
+    // Qui puoi gestire l'errore, ad esempio mostrando un messaggio all'utente
+  }
+};
 
   const handleRemoveExercise = (dayId, group, uniqueId) => {
     setDays((prevDays) => 
