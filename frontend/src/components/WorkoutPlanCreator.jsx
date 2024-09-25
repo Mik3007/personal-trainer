@@ -130,41 +130,63 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
   };
 
   // Aggiunge un esercizio al giorno di allenamento
-  const handleAddExercise = (dayId) => {
+  const handleAddExercise = async (dayId) => {
     const day = days.find((day) => day.id === dayId);
     if (!day.selectedExercise) return;
 
-    const updatedDays = days.map((day) => {
-      if (day.id === dayId) {
-        const updatedMuscleGroups = { ...day.muscleGroups };
-        if (!updatedMuscleGroups[day.selectedGroup]) {
-          updatedMuscleGroups[day.selectedGroup] = [];
-        }
-        updatedMuscleGroups[day.selectedGroup].push({
-          ...day.selectedExercise,
-          sets: day.formData.sets,
-          reps: day.formData.reps,
-          recoveryTime: day.formData.recoveryTime,
-          additionalInfo: day.formData.additionalInfo,
-        });
+    const newExercise = {
+      ...day.selectedExercise,
+      sets: day.formData.sets,
+      reps: day.formData.reps,
+      recoveryTime: day.formData.recoveryTime,
+      additionalInfo: day.formData.additionalInfo,
+    };
 
-        return {
-          ...day,
-          muscleGroups: updatedMuscleGroups,
-          selectedGroup: "",
-          selectedExercise: null,
-          formData: {
-            sets: "",
-            reps: "",
-            recoveryTime: "",
-            additionalInfo: "",
-          },
-        };
-      }
-      return day;
-    });
+    try {
+      // Invia il nuovo esercizio al backend
+      const response = await workoutPlanService.addExercise({
+        userId,
+        groupId: day.selectedGroup,
+        exercise: newExercise,
+      });
 
-    setDays(updatedDays);
+      console.log("Risposta dal server:", response);
+
+      // Aggiorna lo stato locale
+      setDays((prevDays) =>
+        prevDays.map((prevDay) => {
+          if (prevDay.id === dayId) {
+            const updatedMuscleGroups = { ...prevDay.muscleGroups };
+            if (!updatedMuscleGroups[day.selectedGroup]) {
+              updatedMuscleGroups[day.selectedGroup] = [];
+            }
+            updatedMuscleGroups[day.selectedGroup].push(newExercise);
+
+            return {
+              ...prevDay,
+              muscleGroups: updatedMuscleGroups,
+              selectedGroup: "",
+              selectedExercise: null,
+              formData: {
+                sets: "",
+                reps: "",
+                recoveryTime: "",
+                additionalInfo: "",
+              },
+            };
+          }
+          return prevDay;
+        })
+      );
+
+      // Mostra il popup di successo
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+    } catch (error) {
+      console.error("Errore durante l'aggiunta dell'esercizio:", error);
+      setShowErrorPopup(true);
+      setTimeout(() => setShowErrorPopup(false), 3000);
+    }
   };
 
   // Rimuove un esercizio dal giorno di allenamento
@@ -612,22 +634,22 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                 ))}
               </div>
 
-              <div className="w-full flex justify-between items-center mt-4">
+              <div className="w-full flex flex-col sm:flex-row justify-between items-center mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
                 <button
                   onClick={addDay}
-                  className="bg-blue-600 text-white px-2 py-2 rounded hover:bg-blue-600"
+                  className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm sm:text-base"
                 >
                   Aggiungi Giorno
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="bg-gray-600 text-white px-2 py-2 rounded hover:bg-green-600 sm:px-2 sm:py-1"
+                  className="w-full sm:w-auto bg-gray-600 text-white px-4 py-2 rounded hover:bg-green-600 text-sm sm:text-base"
                 >
                   Crea Scheda
                 </button>
                 <button
                   onClick={closeModal}
-                  className="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 sm:px-2 sm:py-1"
+                  className="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm sm:text-base"
                 >
                   Annulla
                 </button>
