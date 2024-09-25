@@ -30,6 +30,10 @@
     {
       "id": "leg_extension",
       "name": "Leg Extension"
+    },
+    {
+      "id": "back_squat",
+      "name": "Back Squat"
     }
   ]
   
