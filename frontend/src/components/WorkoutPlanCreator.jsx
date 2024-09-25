@@ -112,12 +112,12 @@ const handleAddExercise = async (dayId) => {
   if (!day.selectedExercise) return;
 
   try {
-    // Invia la richiesta al server per aggiungere l'esercizio
-    const response = await workoutPlanService.addExercise({
+    // Crea il nuovo esercizio
+    const exerciseData = {
       groupId: day.selectedGroup,
       name: day.selectedExercise.name,
-    });
-
+    };
+    const response = await exerciseService.create(exerciseData);
     const newExercise = response.data;
 
     setDays((prevDays) => {
@@ -162,7 +162,8 @@ const handleAddExercise = async (dayId) => {
     console.log("Esercizio aggiunto con successo:", newExercise);
   } catch (error) {
     console.error("Errore durante l'aggiunta dell'esercizio:", error);
-    // Qui puoi gestire l'errore, ad esempio mostrando un messaggio all'utente
+    setShowErrorPopup(true);
+    setTimeout(() => setShowErrorPopup(false), 3000);
   }
 };
 
@@ -399,36 +400,28 @@ const handleAddExercise = async (dayId) => {
                         </div>
                       )}
 
-                     <div className="exercise-list mt-4">
-                        {Object.entries(day.muscleGroups).map(
-                          ([group, exercises]) => (
-                            <div key={group} className="mb-4">
-                              <h4 className="text-lg font-semibold mb-2 text-white">
-                                {group.charAt(0).toUpperCase() + group.slice(1)}{" "}
-                                - Esercizi:
-                              </h4>
-                              <ul className="list-disc list-inside text-white">
-                                {exercises.map((exercise) => (
-                                  <li
-                                    key={exercise.uniqueId}
-                                    className="exercise-item mb-2"
-                                  >
-                                    {exercise.name} - {exercise.sets}x
-                                    {exercise.reps} ({exercise.recoveryTime})
-                                    <button
-                                      onClick={() =>
-                                        handleRemoveExercise(day.id, group, exercise.uniqueId)
-                                      }
-                                      className="ml-4 text-red-500 hover:text-red-700"
-                                    >
-                                      Rimuovi
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )
-                        )}
+<div className="exercise-list mt-4">
+  {Object.entries(day.muscleGroups).map(([group, exercises]) => (
+    <div key={group} className="mb-4">
+      <h4 className="text-lg font-semibold mb-2 text-white">
+        {group.charAt(0).toUpperCase() + group.slice(1)} - Esercizi:
+      </h4>
+      <ul className="list-disc list-inside text-white">
+        {exercises.map((exercise) => (
+          <li key={exercise.uniqueId} className="exercise-item mb-2">
+            {exercise.name} - {exercise.sets}x{exercise.reps} ({exercise.recoveryTime})
+            <button
+              onClick={() => handleRemoveExercise(day.id, group, exercise.uniqueId)}
+              className="ml-4 text-red-500 hover:text-red-700"
+            >
+              Rimuovi
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
                       </div>
                     </div>
                   </div>
