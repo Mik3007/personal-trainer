@@ -130,42 +130,43 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
   };
 
   // Aggiunge un esercizio al giorno di allenamento
-  const handleAddExercise = (dayId) => {
-    const day = days.find((day) => day.id === dayId);
-    if (!day.selectedExercise) return;
+  const handleAddExercise = useCallback((dayId) => {
+    setDays((prevDays) => {
+      const updatedDays = prevDays.map((day) => {
+        if (day.id === dayId) {
+          const updatedMuscleGroups = { ...day.muscleGroups };
+          if (!updatedMuscleGroups[day.selectedGroup]) {
+            updatedMuscleGroups[day.selectedGroup] = [];
+          }
+          updatedMuscleGroups[day.selectedGroup].push({
+            ...day.selectedExercise,
+            uniqueId: `${day.id}-${day.selectedGroup}-${exerciseCounter}`,
+            sets: day.formData.sets,
+            reps: day.formData.reps,
+            recoveryTime: day.formData.recoveryTime,
+            additionalInfo: day.formData.additionalInfo,
+          });
 
-    const updatedDays = days.map((day) => {
-      if (day.id === dayId) {
-        const updatedMuscleGroups = { ...day.muscleGroups };
-        if (!updatedMuscleGroups[day.selectedGroup]) {
-          updatedMuscleGroups[day.selectedGroup] = [];
+          return {
+            ...day,
+            muscleGroups: updatedMuscleGroups,
+            selectedGroup: "",
+            selectedExercise: null,
+            formData: {
+              sets: "",
+              reps: "",
+              recoveryTime: "",
+              additionalInfo: "",
+            },
+          };
         }
-        updatedMuscleGroups[day.selectedGroup].push({
-          ...day.selectedExercise,
-          sets: day.formData.sets,
-          reps: day.formData.reps,
-          recoveryTime: day.formData.recoveryTime,
-          additionalInfo: day.formData.additionalInfo,
-        });
+        return day;
+      });
 
-        return {
-          ...day,
-          muscleGroups: updatedMuscleGroups,
-          selectedGroup: "",
-          selectedExercise: null,
-          formData: {
-            sets: "",
-            reps: "",
-            recoveryTime: "",
-            additionalInfo: "",
-          },
-        };
-      }
-      return day;
+      setExerciseCounter((prev) => prev + 1);
+      return updatedDays;
     });
-
-    setDays(updatedDays);
-  };
+  }, [exerciseCounter]);
 
   // Rimuove un esercizio dal giorno di allenamento
   const handleRemoveExercise = (dayId, group, exerciseIndex) => {
@@ -405,35 +406,26 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                       )}
 
                       <div className="exercise-list mt-4">
-                        {Object.entries(day.muscleGroups).map(
-                          ([group, exercises]) => (
-                            <div key={group} className="mb-4">
-                              <h4 className="text-lg font-semibold mb-2 text-white">
-                                {group.charAt(0).toUpperCase() + group.slice(1)}{" "}
-                                - Esercizi:
-                              </h4>
-                              <ul className="list-disc list-inside text-white">
-                                {exercises.map((exercise, idx) => (
-                                  <li
-                                    key={`${exercise.id}-${idx}`}
-                                    className="exercise-item mb-2"
-                                  >
-                                    {exercise.name} - {exercise.sets}x
-                                    {exercise.reps} ({exercise.recoveryTime})
-                                    <button
-                                      onClick={() =>
-                                        handleRemoveExercise(day.id, group, idx)
-                                      }
-                                      className="ml-4 text-red-500 hover:text-red-700"
-                                    >
-                                      Rimuovi
-                                    </button>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )
-                        )}
+{Object.entries(day.muscleGroups).map(([group, exercises]) => (
+      <div key={group} className="mb-4">
+        <h4 className="text-lg font-semibold mb-2 text-white">
+          {group.charAt(0).toUpperCase() + group.slice(1)} - Esercizi:
+        </h4>
+        <ul className="list-disc list-inside text-white">
+          {exercises.map((exercise) => (
+            <li key={exercise.uniqueId} className="exercise-item mb-2">
+              {exercise.name} - {exercise.sets}x{exercise.reps} ({exercise.recoveryTime})
+              <button
+                onClick={() => handleRemoveExercise(day.id, group, exercise.uniqueId)}
+                className="ml-4 text-red-500 hover:text-red-700"
+              >
+                Rimuovi
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
                       </div>
                     </div>
                   </div>
