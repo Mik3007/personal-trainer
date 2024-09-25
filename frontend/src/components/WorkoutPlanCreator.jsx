@@ -378,4 +378,4 @@ return (
   </>
 );
 
-export default WorkoutPlanCreatorModal;
+export default WorkoutPlanCreator;
