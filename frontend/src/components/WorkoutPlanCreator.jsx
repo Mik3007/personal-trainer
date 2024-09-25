@@ -23,7 +23,7 @@ const muscleGroups = {
   polpacci,
 };
 
-const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
+const WorkoutPlanCreator = ({ userId, onPlanCreated }) => {
   const [days, setDays] = useState([
     {
       id: 1,
