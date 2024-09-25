@@ -24,7 +24,6 @@ const muscleGroups = {
 };
 
 const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
-  // Stato per gestire i giorni di allenamento
   const [days, setDays] = useState([
     {
       id: 1,
@@ -39,26 +38,20 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
       },
     },
   ]);
-  // Stato per gli esercizi del gruppo muscolare selezionato
   const [exercises, setExercises] = useState([]);
-  // Stati per i popup di feedback
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
-  // Stato per controllare l'apertura/chiusura della modale
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedDays, setExpandedDays] = useState({ 1: true });
+  const [exerciseCounter, setExerciseCounter] = useState(0);
 
-  // Funzioni per aprire e chiudere la modale
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  // Stato per gestire l'espansione dei giorni nel layout mobile
-  const [expandedDays, setExpandedDays] = useState({ 1: true });
 
-  // Funzione per espandere/contrarre un giorno nel layout mobile
   const toggleDay = (dayId) => {
     setExpandedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
   };
 
-  // Funzione per aggiungere un nuovo giorno di allenamento
   const addDay = () => {
     const newDayId = days.length + 1;
     setDays([
@@ -76,11 +69,9 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
         },
       },
     ]);
-    // Espande automaticamente il nuovo giorno aggiunto
     setExpandedDays({ [newDayId]: true });
   };
 
-  // Funzione per rimuovere un giorno di allenamento
   const removeDay = (dayId) => {
     setDays(days.filter((day) => day.id !== dayId));
     setExpandedDays((prev) => {
@@ -90,7 +81,6 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     });
   };
 
-  // Gestisce il cambio del gruppo muscolare selezionato
   const handleGroupChange = (dayId, event) => {
     const groupId = event.target.value;
     setDays(
@@ -103,7 +93,6 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     setExercises(muscleGroups[groupId] || []);
   };
 
-  // Gestisce il cambio dell'esercizio selezionato
   const handleExerciseChange = (dayId, event) => {
     const exerciseId = event.target.value;
     setDays(
@@ -118,7 +107,6 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     );
   };
 
-  // Gestisce i cambiamenti nei campi del form (sets, reps, ecc.)
   const handleFormDataChange = (dayId, field, value) => {
     setDays(
       days.map((day) =>
@@ -129,8 +117,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     );
   };
 
-  // Aggiunge un esercizio al giorno di allenamento
-  const handleAddExercise = useCallback((dayId) => {
+  const handleAddExercise = (dayId) => {
     setDays((prevDays) => {
       const updatedDays = prevDays.map((day) => {
         if (day.id === dayId) {
@@ -166,33 +153,29 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
       setExerciseCounter((prev) => prev + 1);
       return updatedDays;
     });
-  }, [exerciseCounter]);
-
-  // Rimuove un esercizio dal giorno di allenamento
-  const handleRemoveExercise = (dayId, group, exerciseIndex) => {
-    const updatedDays = days.map((day) => {
-      if (day.id === dayId) {
-        const updatedMuscleGroups = { ...day.muscleGroups };
-        updatedMuscleGroups[group] = updatedMuscleGroups[group].filter(
-          (_, index) => index !== exerciseIndex
-        );
-
-        return { ...day, muscleGroups: updatedMuscleGroups };
-      }
-      return day;
-    });
-
-    setDays(updatedDays);
   };
 
-  // Gestisce l'invio del form per creare la scheda di allenamento
+  const handleRemoveExercise = (dayId, group, uniqueId) => {
+    setDays((prevDays) => 
+      prevDays.map((day) => {
+        if (day.id === dayId) {
+          const updatedMuscleGroups = { ...day.muscleGroups };
+          updatedMuscleGroups[group] = updatedMuscleGroups[group].filter(
+            (exercise) => exercise.uniqueId !== uniqueId
+          );
+          return { ...day, muscleGroups: updatedMuscleGroups };
+        }
+        return day;
+      })
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const workoutPlan = days.flatMap((day) =>
       Object.entries(day.muscleGroups).flatMap(([groupId, exercises]) =>
         exercises.map((exercise) => {
-          // Trova l'esercizio originale per ottenere il nome corretto
           const originalExercise = muscleGroups[groupId].find(
             (e) => e.id === exercise.id
           );
@@ -222,7 +205,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
       onPlanCreated(response.data);
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 3000);
-      closeModal(); // Chiude la modale dopo la creazione
+      closeModal();
     } catch (error) {
       console.error("Errore durante la creazione della scheda:", error);
       setShowErrorPopup(true);
@@ -405,27 +388,36 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                         </div>
                       )}
 
-                      <div className="exercise-list mt-4">
-{Object.entries(day.muscleGroups).map(([group, exercises]) => (
-      <div key={group} className="mb-4">
-        <h4 className="text-lg font-semibold mb-2 text-white">
-          {group.charAt(0).toUpperCase() + group.slice(1)} - Esercizi:
-        </h4>
-        <ul className="list-disc list-inside text-white">
-          {exercises.map((exercise) => (
-            <li key={exercise.uniqueId} className="exercise-item mb-2">
-              {exercise.name} - {exercise.sets}x{exercise.reps} ({exercise.recoveryTime})
-              <button
-                onClick={() => handleRemoveExercise(day.id, group, exercise.uniqueId)}
-                className="ml-4 text-red-500 hover:text-red-700"
-              >
-                Rimuovi
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
+                     <div className="exercise-list mt-4">
+                        {Object.entries(day.muscleGroups).map(
+                          ([group, exercises]) => (
+                            <div key={group} className="mb-4">
+                              <h4 className="text-lg font-semibold mb-2 text-white">
+                                {group.charAt(0).toUpperCase() + group.slice(1)}{" "}
+                                - Esercizi:
+                              </h4>
+                              <ul className="list-disc list-inside text-white">
+                                {exercises.map((exercise) => (
+                                  <li
+                                    key={exercise.uniqueId}
+                                    className="exercise-item mb-2"
+                                  >
+                                    {exercise.name} - {exercise.sets}x
+                                    {exercise.reps} ({exercise.recoveryTime})
+                                    <button
+                                      onClick={() =>
+                                        handleRemoveExercise(day.id, group, exercise.uniqueId)
+                                      }
+                                      className="ml-4 text-red-500 hover:text-red-700"
+                                    >
+                                      Rimuovi
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -478,9 +470,9 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                             <option value="dorso">Dorso</option>
                             <option value="tricipiti">Tricipiti</option>
                             <option value="quadricipiti">Quadricipiti</option>
-                            <option value="bicipiteFemoraleGlutei">
-                              Bicipite Femorale e Glutei
-                            </option>
+                            <option value="femorali">Femorali</option>
+                            <option value="addome">Addome</option>
+                            <option value="polpacci">Polpacci</option>
                           </select>
 
                           {day.selectedGroup && (
@@ -570,9 +562,9 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                                     - Esercizi:
                                   </h4>
                                   <ul className="list-disc list-inside text-white">
-                                    {exercises.map((exercise, idx) => (
+                                    {exercises.map((exercise) => (
                                       <li
-                                        key={`${exercise.id}-${idx}`}
+                                        key={exercise.uniqueId}
                                         className="exercise-item mb-2"
                                       >
                                         {exercise.name} - {exercise.sets}x
@@ -583,7 +575,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
                                             handleRemoveExercise(
                                               day.id,
                                               group,
-                                              idx
+                                              exercise.uniqueId
                                             )
                                           }
                                           className="ml-4 text-red-500 hover:text-red-700"
