@@ -167,9 +167,6 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
       return prevDay;
     })
   );
-
-  setShowSuccessPopup(true);
-  setTimeout(() => setShowSuccessPopup(false), 3000);
 };
 
   // Rimuove un esercizio dal giorno di allenamento
