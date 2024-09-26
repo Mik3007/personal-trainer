@@ -146,15 +146,14 @@ const handleAddExercise = (dayId) => {
     prevDays.map((prevDay) => {
       if (prevDay.id === dayId) {
         const updatedMuscleGroups = { ...prevDay.muscleGroups };
-        if (!updatedMuscleGroups[day.selectedGroup]) {
-          updatedMuscleGroups[day.selectedGroup] = [];
+        if (!updatedMuscleGroups[prevDay.selectedGroup]) {
+          updatedMuscleGroups[prevDay.selectedGroup] = [];
         }
-        updatedMuscleGroups[day.selectedGroup].push(newExercise);
+        updatedMuscleGroups[prevDay.selectedGroup].push(newExercise);
 
         return {
           ...prevDay,
           muscleGroups: updatedMuscleGroups,
-          selectedGroup: "",
           selectedExercise: null,
           formData: {
             sets: "",
@@ -168,7 +167,6 @@ const handleAddExercise = (dayId) => {
     })
   );
 
-  // Mostra il popup di successo
   setShowSuccessPopup(true);
   setTimeout(() => setShowSuccessPopup(false), 3000);
 };
