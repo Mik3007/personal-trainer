@@ -168,7 +168,6 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
     })
   );
 
-  // Mostra il popup di successo
   setShowSuccessPopup(true);
   setTimeout(() => setShowSuccessPopup(false), 3000);
 };
