@@ -130,7 +130,7 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
   };
 
   // Aggiunge un esercizio al giorno di allenamento
-const handleAddExercise = async (dayId) => {
+const handleAddExercise = (dayId) => {
   const day = days.find((day) => day.id === dayId);
   if (!day.selectedExercise) return;
 
@@ -140,51 +140,37 @@ const handleAddExercise = async (dayId) => {
     reps: day.formData.reps,
     recoveryTime: day.formData.recoveryTime,
     additionalInfo: day.formData.additionalInfo,
-    userId, // Assicurati che userId sia disponibile nel componente
-    groupId: day.selectedGroup,
   };
 
-  try {
-    // Usa exerciseService.create invece di workoutPlanService.addExercise
-    const response = await exerciseService.create(newExercise);
-
-    console.log("Risposta dal server:", response);
-
-    // Aggiorna lo stato locale
-    setDays((prevDays) => 
-      prevDays.map((prevDay) => {
-        if (prevDay.id === dayId) {
-          const updatedMuscleGroups = { ...prevDay.muscleGroups };
-          if (!updatedMuscleGroups[day.selectedGroup]) {
-            updatedMuscleGroups[day.selectedGroup] = [];
-          }
-          updatedMuscleGroups[day.selectedGroup].push(response.data);
-
-          return {
-            ...prevDay,
-            muscleGroups: updatedMuscleGroups,
-            selectedGroup: "",
-            selectedExercise: null,
-            formData: {
-              sets: "",
-              reps: "",
-              recoveryTime: "",
-              additionalInfo: "",
-            },
-          };
+  setDays((prevDays) => 
+    prevDays.map((prevDay) => {
+      if (prevDay.id === dayId) {
+        const updatedMuscleGroups = { ...prevDay.muscleGroups };
+        if (!updatedMuscleGroups[day.selectedGroup]) {
+          updatedMuscleGroups[day.selectedGroup] = [];
         }
-        return prevDay;
-      })
-    );
+        updatedMuscleGroups[day.selectedGroup].push(newExercise);
 
-    // Mostra il popup di successo
-    setShowSuccessPopup(true);
-    setTimeout(() => setShowSuccessPopup(false), 3000);
-  } catch (error) {
-    console.error("Errore durante l'aggiunta dell'esercizio:", error);
-    setShowErrorPopup(true);
-    setTimeout(() => setShowErrorPopup(false), 3000);
-  }
+        return {
+          ...prevDay,
+          muscleGroups: updatedMuscleGroups,
+          selectedGroup: "",
+          selectedExercise: null,
+          formData: {
+            sets: "",
+            reps: "",
+            recoveryTime: "",
+            additionalInfo: "",
+          },
+        };
+      }
+      return prevDay;
+    })
+  );
+
+  // Mostra il popup di successo
+  setShowSuccessPopup(true);
+  setTimeout(() => setShowSuccessPopup(false), 3000);
 };
 
   // Rimuove un esercizio dal giorno di allenamento
