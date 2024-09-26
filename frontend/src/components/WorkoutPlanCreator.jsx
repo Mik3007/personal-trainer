@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { workoutPlanService } from "../services/api";
+import { workoutPlanService, exerciseService } from "../services/api";
 import petto from "../../../backend/exercises/petto.json";
 import spalle from "../../../backend/exercises/spalle.json";
 import bicipiti from "../../../backend/exercises/bicipiti.json";
