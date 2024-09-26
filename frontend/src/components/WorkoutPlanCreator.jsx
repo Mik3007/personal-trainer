@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { workoutPlanService, exerciseService } from "../services/api";
+import { workoutPlanService } from "../services/api";
 import petto from "../../../backend/exercises/petto.json";
 import spalle from "../../../backend/exercises/spalle.json";
 import bicipiti from "../../../backend/exercises/bicipiti.json";
@@ -130,46 +129,64 @@ const WorkoutPlanCreatorModal = ({ userId, onPlanCreated }) => {
   };
 
   // Aggiunge un esercizio al giorno di allenamento
-const handleAddExercise = (dayId) => {
-  const day = days.find((day) => day.id === dayId);
-  if (!day.selectedExercise) return;
+  const handleAddExercise = async (dayId) => {
+    const day = days.find((day) => day.id === dayId);
+    if (!day.selectedExercise) return;
 
-  const newExercise = {
-    ...day.selectedExercise,
-    sets: day.formData.sets,
-    reps: day.formData.reps,
-    recoveryTime: day.formData.recoveryTime,
-    additionalInfo: day.formData.additionalInfo,
+    const newExercise = {
+      ...day.selectedExercise,
+      sets: day.formData.sets,
+      reps: day.formData.reps,
+      recoveryTime: day.formData.recoveryTime,
+      additionalInfo: day.formData.additionalInfo,
+    };
+
+    try {
+      // Invia il nuovo esercizio al backend
+      const response = await workoutPlanService.addExercise({
+        userId,
+        groupId: day.selectedGroup,
+        exercise: newExercise,
+      });
+
+      console.log("Risposta dal server:", response);
+
+      // Aggiorna lo stato locale
+      setDays((prevDays) =>
+        prevDays.map((prevDay) => {
+          if (prevDay.id === dayId) {
+            const updatedMuscleGroups = { ...prevDay.muscleGroups };
+            if (!updatedMuscleGroups[day.selectedGroup]) {
+              updatedMuscleGroups[day.selectedGroup] = [];
+            }
+            updatedMuscleGroups[day.selectedGroup].push(newExercise);
+
+            return {
+              ...prevDay,
+              muscleGroups: updatedMuscleGroups,
+              selectedGroup: "",
+              selectedExercise: null,
+              formData: {
+                sets: "",
+                reps: "",
+                recoveryTime: "",
+                additionalInfo: "",
+              },
+            };
+          }
+          return prevDay;
+        })
+      );
+
+      // Mostra il popup di successo
+      setShowSuccessPopup(true);
+      setTimeout(() => setShowSuccessPopup(false), 3000);
+    } catch (error) {
+      console.error("Errore durante l'aggiunta dell'esercizio:", error);
+      setShowErrorPopup(true);
+      setTimeout(() => setShowErrorPopup(false), 3000);
+    }
   };
-
-  setDays((prevDays) => 
-    prevDays.map((prevDay) => {
-      if (prevDay.id === dayId) {
-        const updatedMuscleGroups = { ...prevDay.muscleGroups };
-        if (!updatedMuscleGroups[prevDay.selectedGroup]) {
-          updatedMuscleGroups[prevDay.selectedGroup] = [];
-        }
-        updatedMuscleGroups[prevDay.selectedGroup].push(newExercise);
-
-        return {
-          ...prevDay,
-          muscleGroups: updatedMuscleGroups,
-          selectedExercise: null,
-          formData: {
-            sets: "",
-            reps: "",
-            recoveryTime: "",
-            additionalInfo: "",
-          },
-        };
-      }
-      return prevDay;
-    })
-  );
-
-  setShowSuccessPopup(true);
-  setTimeout(() => setShowSuccessPopup(false), 3000);
-};
 
   // Rimuove un esercizio dal giorno di allenamento
   const handleRemoveExercise = (dayId, group, exerciseIndex) => {
