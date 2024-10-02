@@ -7,7 +7,11 @@ const BIAManager = ({ userId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [biaData, setBiaData] = useState([]);
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
   const [hasBiaData, setHasBiaData] = useState(false);
+=======
+  const [hasBiaData, setHasBiaData] = useState(null);
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
   const [newBiaData, setNewBiaData] = useState({
     weight: "",
     fatPercentage: "",
@@ -28,13 +32,18 @@ const BIAManager = ({ userId }) => {
 
   // Funzione per recuperare i dati BIA
   const fetchBiaData = async () => {
+<<<<<<< HEAD
     setLoading(true); // Inizia il caricamento
+=======
+    setLoading(true);
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
     try {
       console.log(`Fetching BIA data for userId: ${userId}`);
       const response = await userService.getBIAData(userId);
       
       if (response.data && response.data.length > 0) {
         setBiaData(response.data);
+<<<<<<< HEAD
         setHasBiaData(true);
       } else {
         setBiaData([]);
@@ -50,6 +59,29 @@ const BIAManager = ({ userId }) => {
   };
   
   
+=======
+        localStorage.setItem(`biaData_${userId}`, JSON.stringify(response.data));
+      } else {
+        const savedData = localStorage.getItem(`biaData_${userId}`);
+        if (savedData) {
+          setBiaData(JSON.parse(savedData));
+        } else {
+          setBiaData([]);
+        }
+      }
+    } catch (error) {
+      console.error("Errore nel recupero dei dati BIA:", error);
+      const savedData = localStorage.getItem(`biaData_${userId}`);
+      if (savedData) {
+        setBiaData(JSON.parse(savedData));
+      } else {
+        setBiaData([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
 
   const checkBiaData = async () => {
     if (!userId) {
@@ -58,11 +90,15 @@ const BIAManager = ({ userId }) => {
     }
   
     try {
-      // Controlla se l'utente ha dati BIA
       const userProfile = await userService.getUserById(userId);
+<<<<<<< HEAD
       setHasBiaData(userProfile.hasBiaData); // Imposta lo stato di presenza dei dati
   
       // Se ha dati BIA, carica i dati
+=======
+      setHasBiaData(userProfile.hasBiaData);
+      
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
       if (userProfile.hasBiaData) {
         await fetchBiaData();
       } else {
@@ -89,9 +125,15 @@ const BIAManager = ({ userId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+<<<<<<< HEAD
       const newBia = await userService.addBIAData(userId, newBiaData);
       // Aggiungi la nuova misurazione all'array esistente
       setBiaData((prevData) => [...prevData, newBia.data]);
+=======
+      await userService.addBIAData(userId, newBiaData);
+      await fetchBiaData();
+      setHasBiaData(true);
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
       closeModal();
       // Reset del modulo
       setNewBiaData({
@@ -108,6 +150,7 @@ const BIAManager = ({ userId }) => {
   };
 
   const handleDelete = async (biaId) => {
+<<<<<<< HEAD
     try {
       console.log(`Attempting to delete BIA with userId: ${userId}, biaId: ${biaId}`);
       await userService.deleteBIAData(userId, biaId);
@@ -120,6 +163,14 @@ const BIAManager = ({ userId }) => {
         await fetchBiaData(); // Aggiorna i dati per riflettere lo stato attuale
       } else {
         alert(`Errore nell'eliminazione: ${error.response?.data?.message || error.message}`);
+=======
+    if (window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")) {
+      try {
+        await userService.deleteBIAData(userId, biaId);
+        await fetchBiaData();
+      } catch (error) {
+        console.error("Errore nell'eliminazione dei dati BIA:", error);
+>>>>>>> 724be7a04fd789b68314a2262d61efcf9443b076
       }
     }
   };
@@ -130,7 +181,7 @@ const BIAManager = ({ userId }) => {
 
   return (
     <div>
-      {/* Pulsante per aprire il modale di inserimento BIA */}
+      {/* Pulsante per aprire il modale di inserimento BIA - ora sempre visibile */}
       <button
         onClick={openModal}
         className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out"
