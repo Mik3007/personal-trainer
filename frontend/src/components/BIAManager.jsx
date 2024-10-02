@@ -3,10 +3,11 @@ import { userService } from "../services/api";
 import BIAChart from "./BIAChart";
 
 const BIAManager = ({ userId }) => {
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [biaData, setBiaData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hasBiaData, setHasBiaData] = useState(null); // Nuovo stato per tracciare se l'utente ha dati BIA
+  const [hasBiaData, setHasBiaData] = useState(false);
   const [newBiaData, setNewBiaData] = useState({
     weight: "",
     fatPercentage: "",
@@ -25,47 +26,31 @@ const BIAManager = ({ userId }) => {
     bmi: "Indice di massa corporea (BMI)",
   };
 
+  // Funzione per recuperare i dati BIA
   const fetchBiaData = async () => {
-    setLoading(true); // Mostra caricamento all'inizio
+    setLoading(true); // Inizia il caricamento
     try {
+      console.log(`Fetching BIA data for userId: ${userId}`);
       const response = await userService.getBIAData(userId);
       
       if (response.data && response.data.length > 0) {
-        setBiaData(response.data);  // Dati corretti dall'API
-        localStorage.setItem(`biaData_${userId}`, JSON.stringify(response.data));  // Salva nel localStorage per cache
+        setBiaData(response.data);
+        setHasBiaData(true);
       } else {
-        const savedData = localStorage.getItem(`biaData_${userId}`);
-        
-        if (savedData) {
-          setBiaData(JSON.parse(savedData));  // Se non ci sono dati dall'API, usa il localStorage
-        } else {
-          setBiaData([]);  // Nessun dato disponibile
-        }
+        setBiaData([]);
+        setHasBiaData(false); // Aggiorna stato se non ci sono dati
       }
     } catch (error) {
       console.error("Errore nel recupero dei dati BIA:", error);
-      const savedData = localStorage.getItem(`biaData_${userId}`);
-      if (savedData) {
-        setBiaData(JSON.parse(savedData));  // Se c'è un errore, usa il localStorage
-      } else {
-        setBiaData([]);  // Nessun dato disponibile
-      }
+      setBiaData([]); // Assicurati che l'array sia vuoto in caso di errore
+      setHasBiaData(false); // Assicurati che lo stato sia aggiornato
     } finally {
-      setLoading(false); // Ferma il caricamento in ogni caso
+      setLoading(false); // Ferma il caricamento
     }
   };
   
   
-  // Chiamata per verificare e caricare i dati BIA quando il componente viene montato
-  useEffect(() => {
-    const savedData = localStorage.getItem(`biaData_${userId}`);
-    if (savedData) {
-      setBiaData(JSON.parse(savedData));  // Prima prova a caricare i dati dalla cache locale
-    }
-    fetchBiaData();  // Poi fai la chiamata API per i dati aggiornati
-  }, [userId]);
-  
-  
+
   const checkBiaData = async () => {
     if (!userId) {
       console.error("ID utente non definito.");
@@ -75,28 +60,23 @@ const BIAManager = ({ userId }) => {
     try {
       // Controlla se l'utente ha dati BIA
       const userProfile = await userService.getUserById(userId);
-      setHasBiaData(userProfile.hasBiaData);
-      
+      setHasBiaData(userProfile.hasBiaData); // Imposta lo stato di presenza dei dati
+  
       // Se ha dati BIA, carica i dati
       if (userProfile.hasBiaData) {
         await fetchBiaData();
       } else {
-        const savedData = localStorage.getItem(`biaData_${userId}`);
-        if (savedData) {
-          setBiaData(JSON.parse(savedData));
-        } else {
-          setBiaData([]);
-        }
+        setBiaData([]); // Se non ha dati, imposta l'array come vuoto
       }
     } catch (error) {
       console.error("Errore nel controllo dei dati BIA:", error);
       setHasBiaData(false);
+      setBiaData([]); // Imposta l'array come vuoto in caso di errore
     }
   };
-  
 
   useEffect(() => {
-    checkBiaData();
+    checkBiaData(); // Solo per controllare i dati BIA
   }, [userId]);
 
   const openModal = () => setIsModalOpen(true);
@@ -109,10 +89,11 @@ const BIAManager = ({ userId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userService.addBIAData(userId, newBiaData);
-      await fetchBiaData(); // Aggiorna i dati dopo aver aggiunto una nuova misurazione
-      setHasBiaData(true);
+      const newBia = await userService.addBIAData(userId, newBiaData);
+      // Aggiungi la nuova misurazione all'array esistente
+      setBiaData((prevData) => [...prevData, newBia.data]);
       closeModal();
+      // Reset del modulo
       setNewBiaData({
         weight: "",
         fatPercentage: "",
@@ -127,40 +108,35 @@ const BIAManager = ({ userId }) => {
   };
 
   const handleDelete = async (biaId) => {
-    if (window.confirm("Sei sicuro di voler eliminare questa misurazione BIA?")) {
-      try {
-        await userService.deleteBIAData(userId, biaId);
-        await fetchBiaData();  // Aggiorna i dati dopo aver eliminato una misurazione
-      } catch (error) {
-        console.error("Errore nell'eliminazione dei dati BIA:", error);
+    try {
+      console.log(`Attempting to delete BIA with userId: ${userId}, biaId: ${biaId}`);
+      await userService.deleteBIAData(userId, biaId);
+      console.log("BIA deletion successful");
+      await fetchBiaData(); // Aggiorna i dati dopo l'eliminazione
+    } catch (error) {
+      console.error("Errore nell'eliminazione dei dati BIA:", error);
+      if (error.response && error.response.status === 404) {
+        alert("La misurazione BIA non è stata trovata. Potrebbe essere già stata eliminata.");
+        await fetchBiaData(); // Aggiorna i dati per riflettere lo stato attuale
+      } else {
+        alert(`Errore nell'eliminazione: ${error.response?.data?.message || error.message}`);
       }
     }
   };
 
-  if (hasBiaData === null) {
-    return <div>Caricamento...</div>;
-  }
-
   if (loading) {
-    return <div>Caricamento in corso...</div>;  // Mostra il caricamento
+    return <div>Caricamento in corso...</div>;
   }
-  
-  if (!biaData || biaData.length === 0) {
-    return <div>Nessun dato disponibile</div>;
-  }
-  
 
   return (
     <div>
       {/* Pulsante per aprire il modale di inserimento BIA */}
       <button
         onClick={openModal}
-        className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
+        className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out"
         type="button"
       >
-        {biaData.length > 0
-          ? "Aggiungi nuova misurazione BIA"
-          : "Inserisci prima misurazione BIA"}
+        Aggiungi nuova misurazione BIA
       </button>
 
       {/* Modale per l'inserimento di nuovi dati BIA */}
@@ -168,7 +144,7 @@ const BIAManager = ({ userId }) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-start pt-20 z-50">
           <div className="relative p-5 border w-96 shadow-lg rounded-md bg-gray-800 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-medium leading-6 text-white mb-4">
-              {biaData.length > 0 ? "Inserisci nuova BIA" : "Crea BIA"}
+              Inserisci nuova BIA
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               {Object.entries(fieldLabels).map(([key, label]) => (
@@ -215,9 +191,7 @@ const BIAManager = ({ userId }) => {
         <div className="mt-4">
           <BIAChart data={biaData} />
           <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">
-              Storico misurazioni BIA
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Storico misurazioni BIA</h3>
             <ul className="space-y-2">
               {biaData.map((bia) => (
                 <li

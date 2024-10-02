@@ -47,7 +47,10 @@ export const userService = {
   deleteUser: (userId) => api.delete(`/admin/users/${userId}`),
   getBIAData: (userId) => api.get(userId ? `/bia/${userId}` : '/bia'),
   addBIAData: (userId, biaData) => api.post(userId ? `/bia/${userId}` : '/bia', biaData),
-  deleteBIAData: (userId, biaId) => api.delete(userId ? `/bia/${userId}/${biaId}` : `/bia/${biaId}`),
+  deleteBIAData: (userId, biaId) => {
+    console.log(`Deleting BIA data. UserId: ${userId}, BiaId: ${biaId}`);
+    return api.delete(`/bia/${userId}/${biaId}`);
+  },
   adminRegisterUser: (userData) => api.post('/admin/users/register', userData),
 };
 
@@ -56,7 +59,16 @@ export const workoutPlanService = {
   getAll: () => api.get('/workout-plans'),
   getOne: (id) => api.get(`/workout-plans/${id}`),
   create: (planData) => api.post('/workout-plans', planData),
-  update: (id, planData) => api.put(`/workout-plans/${id}`, planData),
+  update: async (id, planData) => {
+    try {
+      const response = await api.put(`/workout-plans/${id}`, planData);
+      console.log("Risposta completa dal server:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Errore nella chiamata API di aggiornamento:", error);
+      throw error;
+    }
+  },
   delete: (id) => api.delete(`/workout-plans/${id}`),
   getAllPlans: (userId) => api.get(`/workout-plans/${userId}/all`),
 };

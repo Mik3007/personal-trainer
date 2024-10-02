@@ -38,24 +38,23 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
   const getExerciseById = (groupId, exerciseId) => {
     const exercises = getExercisesByGroupId(groupId);
-    return exercises.find((ex) => ex.id === exerciseId);
+    return exercises.find((ex) => ex.id === exerciseId) || null;
   };
 
   // Funzione per recuperare le schede precedenti dell'utente (fino a un massimo di 3)
   const fetchPreviousPlans = async () => {
     try {
       const response = await workoutPlanService.getAllPlans(userId);
-      setPreviousPlans(response.data.slice(0, 3));  // Assicurati che 'response.data' sia l'array di schede
+      setPreviousPlans(response.data.slice(0, 3)); // Assicurati che 'response.data' sia l'array di schede
     } catch (error) {
-      console.error('Errore nel recupero delle schede precedenti:', error);
+      console.error("Errore nel recupero delle schede precedenti:", error);
     }
   };
-  
 
   useEffect(() => {
     const fetchWorkoutPlan = async () => {
       if (!userId) {
-        setError("ID utente non valido");
+        setWorkoutPlan(null);
         setIsLoading(false);
         return;
       }
@@ -64,7 +63,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
       setError(null);
       try {
         const response = await workoutPlanService.getOne(userId);
-        if (response.data) {
+        if (response && response.data) {
           const groupedExercises = response.data.exercises.reduce((acc, ex) => {
             const dayKey = `Giorno ${ex.day}`;
             if (!acc[dayKey]) {
@@ -79,26 +78,21 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
           setWorkoutPlan({
             _id: response.data._id,
-            createdAt: response.data.createdAt, // Data della scheda
+            createdAt: response.data.createdAt,
             exercises: groupedExercises,
           });
+          fetchPreviousPlans();
         } else {
           setWorkoutPlan(null);
         }
-        // Recupera anche le schede precedenti
-        fetchPreviousPlans();
       } catch (error) {
         console.error(
           "Errore nel recupero della scheda di allenamento:",
           error
         );
-        if (error.response && error.response.status === 404) {
-          setWorkoutPlan(null);
-        } else {
-          setError(
-            "Impossibile caricare la scheda di allenamento. Riprova più tardi."
-          );
-        }
+        setError(
+          "Impossibile caricare la scheda di allenamento. Riprova più tardi."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -123,7 +117,8 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
   const handleEditPlan = () => {
     setIsEditing(true);
-    setEditedPlan(JSON.parse(JSON.stringify(workoutPlan)));
+    const editablePlan = JSON.parse(JSON.stringify(workoutPlan));
+    setEditedPlan(editablePlan);
   };
 
   const handleCancelEdit = () => {
@@ -133,11 +128,54 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
 
   const handleSaveEdit = async () => {
     try {
+      const formattedExercises = Object.entries(editedPlan.exercises).flatMap(
+        ([day, groups]) =>
+          Object.entries(groups).flatMap(([groupId, exercises]) =>
+            exercises.map((exercise) => ({
+              ...exercise,
+              day: parseInt(day.replace("Giorno ", "")),
+              groupId,
+            }))
+          )
+      );
+
+      const planToSend = {
+        ...editedPlan,
+        exercises: formattedExercises,
+      };
+
+      console.log("Dati inviati per l'aggiornamento:", planToSend);
       const updatedPlan = await workoutPlanService.update(
         workoutPlan._id,
-        editedPlan
+        planToSend
       );
-      setWorkoutPlan(updatedPlan);
+      console.log("Risposta dal server:", updatedPlan);
+
+      if (updatedPlan && Array.isArray(updatedPlan.exercises)) {
+        const groupedExercises = updatedPlan.exercises.reduce((acc, ex) => {
+          const dayKey = `Giorno ${ex.day}`;
+          if (!acc[dayKey]) {
+            acc[dayKey] = {};
+          }
+          if (!acc[dayKey][ex.groupId]) {
+            acc[dayKey][ex.groupId] = [];
+          }
+          acc[dayKey][ex.groupId].push(ex);
+          return acc;
+        }, {});
+
+        setWorkoutPlan({
+          ...updatedPlan,
+          exercises: groupedExercises,
+        });
+      } else {
+        console.error(
+          "La risposta del server non contiene esercizi validi:",
+          updatedPlan
+        );
+        throw new Error("Formato di risposta del server non valido");
+      }
+
       setIsEditing(false);
       setEditedPlan(null);
     } catch (error) {
@@ -157,14 +195,17 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
       const newPlan = JSON.parse(JSON.stringify(prevPlan));
       if (field === "id") {
         const selectedExercise = getExerciseById(groupId, value);
-        newPlan.exercises[dayKey][groupId][exerciseIndex] = {
-          ...newPlan.exercises[dayKey][groupId][exerciseIndex],
-          id: selectedExercise.id,
-          name: selectedExercise.name,
-        };
+        if (selectedExercise) {
+          newPlan.exercises[dayKey][groupId][exerciseIndex] = {
+            ...newPlan.exercises[dayKey][groupId][exerciseIndex],
+            id: selectedExercise.id,
+            name: selectedExercise.name,
+          };
+        }
       } else {
         newPlan.exercises[dayKey][groupId][exerciseIndex][field] = value;
       }
+      console.log("Updated Plan:", JSON.stringify(newPlan, null, 2));
       return newPlan;
     });
   };
@@ -209,7 +250,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
   return (
     <div className="workout-plan-viewer max-w-full mx-auto bg-gray-800 bg-opacity-70 p-8 rounded-lg shadow-lg mt-20">
       <h2 className="text-3xl font-bold mb-6 text-white">Workout</h2>
-  
+
       {/* Visualizzazione schede precedenti */}
       <div className="mb-4">
         <h3 className="text-xl font-semibold text-white">Schede precedenti</h3>
@@ -219,18 +260,21 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
               <li key={plan._id}>
                 <button
                   onClick={() => {
-                    const groupedExercises = plan.exercises.reduce((acc, ex) => {
-                      const dayKey = `Giorno ${ex.day}`;
-                      if (!acc[dayKey]) {
-                        acc[dayKey] = {};
-                      }
-                      if (!acc[dayKey][ex.groupId]) {
-                        acc[dayKey][ex.groupId] = [];
-                      }
-                      acc[dayKey][ex.groupId].push(ex);
-                      return acc;
-                    }, {});
-  
+                    const groupedExercises = plan.exercises.reduce(
+                      (acc, ex) => {
+                        const dayKey = `Giorno ${ex.day}`;
+                        if (!acc[dayKey]) {
+                          acc[dayKey] = {};
+                        }
+                        if (!acc[dayKey][ex.groupId]) {
+                          acc[dayKey][ex.groupId] = [];
+                        }
+                        acc[dayKey][ex.groupId].push(ex);
+                        return acc;
+                      },
+                      {}
+                    );
+
                     setWorkoutPlan({
                       _id: plan._id,
                       createdAt: plan.createdAt,
@@ -259,9 +303,8 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
           </p>
         )}
       </div>
-  
-      {isEditing ? (
-        // Modalità di modifica
+
+      {isEditing && editedPlan ? (
         <div>
           {Object.entries(editedPlan.exercises).map(([dayKey, groups]) => (
             <div key={dayKey} className="mb-6 bg-gray-700 p-4 rounded-lg">
@@ -269,23 +312,23 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                 {dayKey}
               </h3>
               {Object.entries(groups).map(([groupId, exercises]) => (
-                <div key={groupId} className="mt-4">
+                <div key={`${dayKey}-${groupId}`} className="mt-4">
                   <p className="text-xl text-white mb-2">
                     {getMuscleGroupInfo(groupId).name}
                   </p>
                   {exercises.map((exercise, exIdx) => (
                     <div
-                      key={exIdx}
+                      key={`${dayKey}-${groupId}-${exIdx}`}
                       className="mb-3 flex flex-wrap items-center"
                     >
                       <select
-                        value={exercise.id}
+                        value={exercise.exerciseId}
                         onChange={(e) =>
                           handleExerciseChange(
                             dayKey,
                             groupId,
                             exIdx,
-                            "id",
+                            "exerciseId",
                             e.target.value
                           )
                         }
@@ -384,7 +427,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                   maxWidth: "var(--day-width)",
                 }}
               >
-                <h3 className="text-2xl font-semibold mb-2 text-red-600">
+                <h3 className="text-4xl font-semibold mb-2 text-red-600">
                   {dayKey}
                 </h3>
                 {Object.entries(groups).map(([groupId, exercises]) => {
@@ -393,7 +436,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                   return (
                     <div key={groupId} className="mt-4">
                       <div className="flex justify-between items-center">
-                        <p className="text-xl text-white">{groupName}</p>
+                        <p className="text-2xl text-white">{groupName}</p>
                         <img
                           src={groupImage}
                           alt={groupName}
@@ -402,14 +445,14 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                       </div>
                       {exercises.map((exercise, exIdx) => (
                         <div key={exIdx} className="mb-4">
-                          <p className="text-xl font-bold text-red-600">
+                          <p className="text-xl text-red-600">
                             {exercise.name}
                           </p>
                           <p className="text-gray-300">
                             {exercise.sets} serie di {exercise.reps} ripetizioni
                           </p>
                           <p className="text-gray-400">
-                            Recupero: {exercise.recoveryTime} secondi
+                            Recupero: {exercise.recoveryTime} min
                           </p>
                           {exercise.additionalInfo && (
                             <p className="text-gray-500">
@@ -424,7 +467,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
               </div>
             ))}
           </div>
-  
+
           {/* Layout mobile - con apertura a click */}
           <div className="sm:hidden">
             {Object.entries(workoutPlan.exercises).map(([dayKey, groups]) => (
@@ -438,14 +481,19 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                   </h2>
                   <div
                     className={`transition-all duration-300 ease-in-out ${
-                      expandedDays[dayKey] ? "max-h-full" : "max-h-0 overflow-hidden"
+                      expandedDays[dayKey]
+                        ? "max-h-full"
+                        : "max-h-0 overflow-hidden"
                     }`}
                   >
                     {Object.entries(groups).map(([groupId, exercises]) => {
                       const { name: groupName, image: groupImage } =
                         getMuscleGroupInfo(groupId);
                       return (
-                        <div key={groupId} className="p-4 border-t border-gray-600">
+                        <div
+                          key={groupId}
+                          className="p-4 border-t border-gray-600"
+                        >
                           <div className="flex justify-between items-center mt-2">
                             <p className="text-lg text-white">{groupName}</p>
                             <img
@@ -460,7 +508,8 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                                 {exercise.name}
                               </p>
                               <p className="text-gray-300">
-                                {exercise.sets} serie di {exercise.reps} ripetizioni
+                                {exercise.sets} serie di {exercise.reps}{" "}
+                                ripetizioni
                               </p>
                               <p className="text-gray-400">
                                 Recupero: {exercise.recoveryTime} secondi
@@ -482,7 +531,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
           </div>
         </>
       )}
-  
+
       {isAdmin && !isEditing && (
         <div className="mt-8 flex justify-center">
           <button
@@ -500,7 +549,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
         </div>
       )}
     </div>
-  ); 
+  );
 };
 
 export default WorkoutPlanViewer;
