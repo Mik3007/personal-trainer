@@ -252,53 +252,59 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
       <h2 className="text-3xl font-bold mb-6 text-white">Workout</h2>
 
       {/* Visualizzazione schede precedenti */}
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold text-white">Schede precedenti</h3>
-        <ul className="list-disc list-inside text-white">
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold text-white mb-3">
+          Schede precedenti
+        </h3>
+        <div className="flex flex-wrap gap-2">
           {previousPlans.length > 0 ? (
             previousPlans.map((plan) => (
-              <li key={plan._id}>
-                <button
-                  onClick={() => {
-                    const groupedExercises = plan.exercises.reduce(
-                      (acc, ex) => {
-                        const dayKey = `Giorno ${ex.day}`;
-                        if (!acc[dayKey]) {
-                          acc[dayKey] = {};
-                        }
-                        if (!acc[dayKey][ex.groupId]) {
-                          acc[dayKey][ex.groupId] = [];
-                        }
-                        acc[dayKey][ex.groupId].push(ex);
-                        return acc;
-                      },
-                      {}
-                    );
+              <button
+                key={plan._id}
+                onClick={() => {
+                  const groupedExercises = plan.exercises.reduce((acc, ex) => {
+                    const dayKey = `Giorno ${ex.day}`;
+                    if (!acc[dayKey]) {
+                      acc[dayKey] = {};
+                    }
+                    if (!acc[dayKey][ex.groupId]) {
+                      acc[dayKey][ex.groupId] = [];
+                    }
+                    acc[dayKey][ex.groupId].push(ex);
+                    return acc;
+                  }, {});
 
-                    setWorkoutPlan({
-                      _id: plan._id,
-                      createdAt: plan.createdAt,
-                      exercises: groupedExercises,
-                    });
-                  }}
-                  className="text-blue-400 underline"
-                >
-                  {new Date(plan.createdAt).toLocaleDateString()}
-                </button>
-              </li>
+                  setWorkoutPlan({
+                    _id: plan._id,
+                    createdAt: plan.createdAt,
+                    exercises: groupedExercises,
+                  });
+                }}
+                className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out flex items-center"
+              >
+                {new Date(plan.createdAt).toLocaleDateString("it-IT", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                })}
+              </button>
             ))
           ) : (
             <p className="text-gray-400">
               Nessuna scheda precedente disponibile.
             </p>
           )}
-        </ul>
+        </div>
         {/* Visualizzazione della data della scheda corrente */}
         {workoutPlan && workoutPlan.createdAt && (
           <p className="text-white mt-4">
             Data ultima scheda:{" "}
             <span className="text-blue-400">
-              {new Date(workoutPlan.createdAt).toLocaleDateString()}
+              {new Date(workoutPlan.createdAt).toLocaleDateString("it-IT", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+              })}
             </span>
           </p>
         )}
@@ -512,7 +518,7 @@ const WorkoutPlanViewer = ({ userId, isAdmin }) => {
                                 ripetizioni
                               </p>
                               <p className="text-gray-400">
-                                Recupero: {exercise.recoveryTime} secondi
+                                Recupero: {exercise.recoveryTime} min
                               </p>
                               {exercise.additionalInfo && (
                                 <p className="text-gray-500">
