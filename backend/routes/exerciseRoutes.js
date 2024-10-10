@@ -51,6 +51,10 @@ router.post('/', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
       await fs.writeFile(filePath, JSON.stringify(exercises, null, 2));
       console.log('File scritto con successo');
+
+      // Verifica il contenuto del file dopo la scrittura
+      const verifyContent = await fs.readFile(filePath, 'utf-8');
+      console.log('Contenuto del file dopo la scrittura:', verifyContent);
     } catch (writeError) {
       console.error(`Errore nella scrittura del file:`, writeError);
       throw writeError;
