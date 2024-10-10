@@ -84,4 +84,4 @@ export const exerciseService = {
       throw error;
     }
   },
-};
+};;

@@ -7,6 +7,7 @@ const router = express.Router();
 
 // Rotta per creare un nuovo esercizio (solo per admin autenticati)
 router.post("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
+  console.log('Richiesta di creazione esercizio ricevuta:', req.body);
   try {
     // Estrae il nome dell'esercizio e l'ID del gruppo dal body della richiesta
     const { name, groupId } = req.body;
@@ -63,6 +64,29 @@ router.post("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
         message: "Errore durante la creazione dell'esercizio",
         error: error.toString(),
       });
+  }
+});
+
+router.get('/debug', async (req, res) => {
+  try {
+    const exerciseGroups = ['petto', 'spalle', 'bicipiti', 'dorso', 'tricipiti', 
+                            'quadricipiti', 'femorali', 'addome', 'polpacci'];
+    const allExercises = {};
+
+    for (const group of exerciseGroups) {
+      const filePath = path.join(process.cwd(), 'exercises', `${group}.json`);
+      try {
+        const content = await fs.readFile(filePath, 'utf-8');
+        allExercises[group] = JSON.parse(content);
+      } catch (error) {
+        console.error(`Errore nella lettura del file ${group}.json:`, error);
+        allExercises[group] = { error: error.message };
+      }
+    }
+
+    res.json(allExercises);
+  } catch (error) {
+    res.status(500).json({ error: error.toString() });
   }
 });
 
