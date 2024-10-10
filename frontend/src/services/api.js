@@ -74,5 +74,14 @@ export const workoutPlanService = {
 };
 
 export const exerciseService = {
-  create: (exerciseData) => api.post('/exercises', exerciseData),
+  create: async (exerciseData) => {
+    try {
+      const response = await api.post('/exercises', exerciseData);
+      console.log('Risposta del server per la creazione dell\'esercizio:', response);
+      return response;
+    } catch (error) {
+      console.error('Errore nella creazione dell\'esercizio:', error.response || error);
+      throw error;
+    }
+  },
 };

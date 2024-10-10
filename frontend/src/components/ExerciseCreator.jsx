@@ -10,6 +10,8 @@ const ExerciseCreator = () => {
   // Stati per gestire i popup di successo e errore
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  // Nuovo stato per il messaggio di errore dettagliato
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Array dei gruppi muscolari disponibili
   const muscleGroups = [
@@ -34,6 +36,8 @@ const ExerciseCreator = () => {
       setMuscleGroup('');
     } catch (error) {
       console.error('Errore dettagliato:', error.response || error);
+      // Aggiorna il messaggio di errore con dettagli più specifici
+      setErrorMessage(error.response?.data?.message || error.message || 'Errore sconosciuto');
       // Mostra il popup di errore per 3 secondi
       setShowErrorPopup(true);
       setTimeout(() => setShowErrorPopup(false), 3000);
@@ -111,7 +115,7 @@ const ExerciseCreator = () => {
       {/* Popup di errore */}
       {showErrorPopup && (
         <div className="fixed top-0 right-0 mt-4 mr-4 p-4 bg-red-500 text-white rounded-lg shadow-lg">
-          Errore durante la creazione dell'esercizio. Riprova più tardi.
+          Errore durante la creazione dell'esercizio: {errorMessage}
         </div>
       )}
     </>
