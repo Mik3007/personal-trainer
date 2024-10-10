@@ -67,24 +67,12 @@ router.post("/", ensureAuthenticated, ensureAdmin, async (req, res) => {
   }
 });
 
-router.get('/debug', async (req, res) => {
+router.get('/check/:groupId', async (req, res) => {
   try {
-    const exerciseGroups = ['petto', 'spalle', 'bicipiti', 'dorso', 'tricipiti', 
-                            'quadricipiti', 'femorali', 'addome', 'polpacci'];
-    const allExercises = {};
-
-    for (const group of exerciseGroups) {
-      const filePath = path.join(process.cwd(), 'exercises', `${group}.json`);
-      try {
-        const content = await fs.readFile(filePath, 'utf-8');
-        allExercises[group] = JSON.parse(content);
-      } catch (error) {
-        console.error(`Errore nella lettura del file ${group}.json:`, error);
-        allExercises[group] = { error: error.message };
-      }
-    }
-
-    res.json(allExercises);
+    const { groupId } = req.params;
+    const filePath = path.join(process.cwd(), 'backend', 'exercises', `${groupId}.json`);
+    const content = await fs.readFile(filePath, 'utf-8');
+    res.json(JSON.parse(content));
   } catch (error) {
     res.status(500).json({ error: error.toString() });
   }
