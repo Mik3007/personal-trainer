@@ -117,18 +117,29 @@ const UserManagement = () => {
   }, []);
 
   const getAvatarColor = useCallback((sesso) => {
-    if (!sesso) return 'bg-gray-500';
+    const randomColors = [
+      'bg-red-500', 'bg-yellow-500', 'bg-green-500', 'bg-blue-500', 
+      'bg-indigo-500', 'bg-purple-500', 'bg-pink-500', 'bg-teal-500', 
+      'bg-orange-500', 'bg-cyan-500'
+    ];
+  
+    if (!sesso) {
+      // Seleziona un colore casuale dalla lista
+      return randomColors[Math.floor(Math.random() * randomColors.length)];
+    }
+  
     switch (sesso.toLowerCase()) {
       case 'm':
       case 'maschio':
-        return 'bg-blue-500'; // Maschio
+        return 'bg-blue-500';
       case 'f':
       case 'femmina':
-        return 'bg-pink-500'; // Femmina
+        return 'bg-pink-500';
       case 'altro':
-        return 'bg-yellow-500'; // Altro
+        return 'bg-yellow-500';
       default:
-        return 'bg-blue-500'; // Default grigio
+        // Seleziona un colore casuale per casi non previsti
+        return randomColors[Math.floor(Math.random() * randomColors.length)];
     }
   }, []);
   

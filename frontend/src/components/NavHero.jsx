@@ -169,7 +169,7 @@ const NavHero = () => {
                     </>
                   ) : (
                     <>
-                      <motion.li variants={itemVariants}>
+                      {/* <motion.li variants={itemVariants}>
                         <Link
                           to="/register"
                           onClick={() => setIsOpen(false)} // Chiude il menu
@@ -178,7 +178,7 @@ const NavHero = () => {
                         >
                           Registra Utente
                         </Link>
-                      </motion.li>
+                      </motion.li> */}
                       <motion.li variants={itemVariants}>
                         <Link
                           to="/login"

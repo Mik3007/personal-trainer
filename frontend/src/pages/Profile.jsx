@@ -13,6 +13,7 @@ const Profile = ({ isAdmin }) => {
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [workoutPlanKey, setWorkoutPlanKey] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // Controllo mobile
 
   useEffect(() => {
@@ -63,6 +64,11 @@ const Profile = ({ isAdmin }) => {
     return <div>Nessun profilo trovato.</div>;
   }
 
+  const handleWorkoutPlanCreated = (newPlan) => {
+    console.log("New plan created:", newPlan);
+    setWorkoutPlanKey(prevKey => prevKey + 1); // Incrementa la chiave per forzare il re-render
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#343434] to-[#797979] flex flex-col items-center text-white pt-8">
       <MotivationalQuote className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-center" />
@@ -75,17 +81,18 @@ const Profile = ({ isAdmin }) => {
         <>
           <WorkoutPlanCreator
             userId={userId}
-            onPlanCreated={(newPlan) => {
-              console.log("New plan created:", newPlan);
-              // Aggiorna lo stato locale o ricarica la pagina se necessario
-            }}
+            onPlanCreated={handleWorkoutPlanCreated} // Passa la nuova funzione di callback
           />
           <ExerciseCreator />
         </>
       )}
 
       <div className="w-full px-4">
-        <WorkoutPlanViewer userId={userId} isAdmin={isAdmin} />
+        <WorkoutPlanViewer 
+          key={workoutPlanKey} // Aggiungi questa chiave per forzare il re-render
+          userId={userId} 
+          isAdmin={isAdmin} 
+        />
       </div>
 
       {/* Layout per BIA, diverso per mobile */}

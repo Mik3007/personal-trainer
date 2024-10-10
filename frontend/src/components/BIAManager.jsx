@@ -26,9 +26,8 @@ const BIAManager = ({ userId }) => {
     bmi: "Indice di massa corporea (BMI)",
   };
 
-  // Funzione per recuperare i dati BIA
   const fetchBiaData = async () => {
-    setLoading(true); // Inizia il caricamento
+    setLoading(true);
     try {
       console.log(`Fetching BIA data for userId: ${userId}`);
       const response = await userService.getBIAData(userId);
@@ -38,42 +37,21 @@ const BIAManager = ({ userId }) => {
         setHasBiaData(true);
       } else {
         setBiaData([]);
-        setHasBiaData(false); // Aggiorna stato se non ci sono dati
+        setHasBiaData(false);
       }
     } catch (error) {
       console.error("Errore nel recupero dei dati BIA:", error);
-      setBiaData([]); // Assicurati che l'array sia vuoto in caso di errore
-      setHasBiaData(false); // Assicurati che lo stato sia aggiornato
-    } finally {
-      setLoading(false); // Ferma il caricamento
-    }
-  };
-  
-  const checkBiaData = async () => {
-    if (!userId) {
-      console.error("ID utente non definito.");
-      return;
-    }
-  
-    try {
-      const userProfile = await userService.getUserById(userId);
-      setHasBiaData(userProfile.hasBiaData); // Imposta lo stato di presenza dei dati
-  
-      // Se ha dati BIA, carica i dati
-      if (userProfile.hasBiaData) {
-        await fetchBiaData();
-      } else {
-        setBiaData([]); // Se non ha dati, imposta l'array come vuoto
-      }
-    } catch (error) {
-      console.error("Errore nel controllo dei dati BIA:", error);
+      setBiaData([]);
       setHasBiaData(false);
-      setBiaData([]); // Imposta l'array come vuoto in caso di errore
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    checkBiaData(); // Solo per controllare i dati BIA
+    if (userId) {
+      fetchBiaData();
+    }
   }, [userId]);
 
   const openModal = () => setIsModalOpen(true);
@@ -87,10 +65,8 @@ const BIAManager = ({ userId }) => {
     e.preventDefault();
     try {
       const newBia = await userService.addBIAData(userId, newBiaData);
-      // Aggiungi la nuova misurazione all'array esistente
-      setBiaData((prevData) => [...prevData, newBia.data]);
+      await fetchBiaData(); // Ricarica i dati dopo l'aggiunta
       closeModal();
-      // Reset del modulo
       setNewBiaData({
         weight: "",
         fatPercentage: "",
@@ -101,23 +77,17 @@ const BIAManager = ({ userId }) => {
       });
     } catch (error) {
       console.error("Errore nell'invio dei dati BIA:", error);
+      setError("Errore nell'aggiunta della misurazione BIA. Riprova più tardi.");
     }
   };
 
   const handleDelete = async (biaId) => {
     try {
-      console.log(`Attempting to delete BIA with userId: ${userId}, biaId: ${biaId}`);
       await userService.deleteBIAData(userId, biaId);
-      console.log("BIA deletion successful");
-      await fetchBiaData(); // Aggiorna i dati dopo l'eliminazione
+      await fetchBiaData(); // Ricarica i dati dopo l'eliminazione
     } catch (error) {
       console.error("Errore nell'eliminazione dei dati BIA:", error);
-      if (error.response && error.response.status === 404) {
-        alert("La misurazione BIA non è stata trovata. Potrebbe essere già stata eliminata.");
-        await fetchBiaData(); // Aggiorna i dati per riflettere lo stato attuale
-      } else {
-        alert(`Errore nell'eliminazione: ${error.response?.data?.message || error.message}`);
-      }
+      setError("Errore nell'eliminazione della misurazione BIA. Riprova più tardi.");
     }
   };
 
@@ -127,7 +97,6 @@ const BIAManager = ({ userId }) => {
 
   return (
     <div>
-      {/* Pulsante per aprire il modale di inserimento BIA - ora sempre visibile */}
       <button
         onClick={openModal}
         className="mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition duration-300 ease-in-out"
@@ -136,7 +105,6 @@ const BIAManager = ({ userId }) => {
         Aggiungi nuova misurazione BIA
       </button>
 
-      {/* Modale per l'inserimento di nuovi dati BIA */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-start pt-20 z-50">
           <div className="relative p-5 border w-96 shadow-lg rounded-md bg-gray-800 max-h-[90vh] overflow-y-auto">
@@ -183,7 +151,8 @@ const BIAManager = ({ userId }) => {
         </div>
       )}
 
-      {/* Visualizzazione del grafico BIA e dello storico delle misurazioni */}
+      {error && <div className="text-red-500 mt-4">{error}</div>}
+
       {biaData.length > 0 && (
         <div className="mt-4">
           <BIAChart data={biaData} />

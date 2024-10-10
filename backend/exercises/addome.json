@@ -54,6 +54,10 @@
   {
     "id": "sollevamento_ginocchia_panca",
     "name": "Sollevamento Ginocchia su Panca"
+  },
+  {
+    "id": "plank",
+    "name": "Plank"
   }
 ]
 
