@@ -45,7 +45,6 @@ Questa applicazione web full-stack è pensata per aiutare i personal trainer a g
 ## Struttura del Progetto
 
 Personal-trainer/
-│
 ├── backend/
 │   ├── config/
 │   │   └── database.js
@@ -69,38 +68,37 @@ Personal-trainer/
 │   ├── .gitignore
 │   ├── package.json
 │   └── server.js
-│
 └── frontend/
-├── public/
-│   └── images/
-├── src/
-│   ├── components/
-│   │   ├── BIAChart.jsx
-│   │   ├── BIAManager.jsx
-│   │   ├── Footer.jsx
-│   │   ├── ExerciseCreator.jsx
-│   │   ├── MotivationalQuote.jsx
-│   │   ├── NavHero.jsx
-│   │   ├── Navbar.jsx
-│   │   ├── ServiceCards.jsx
-│   │   ├── WorkoutPlanCreator.jsx
-│   │   └── WorkoutPlanViewer.jsx
-│   ├── pages/
-│   │   ├── CreateWorkout.jsx
-│   │   ├── Home.jsx
-│   │   ├── Login.jsx
-│   │   ├── Profile.jsx
-│   │   ├── Register.jsx
-│   │   └── UserManagement.jsx
-│   ├── services/
-│   │   └── api.jsx
-│   ├── utils/
-│   │   └── axiosConfig.js
-│   ├── App.jsx
-│   └── main.jsx
-├── .gitignore
-├── package.json
-└── vite.config.js
+    ├── public/
+    │   └── images/
+    ├── src/
+    │   ├── components/
+    │   │   ├── BIAChart.jsx
+    │   │   ├── BIAManager.jsx
+    │   │   ├── Footer.jsx
+    │   │   ├── ExerciseCreator.jsx
+    │   │   ├── MotivationalQuote.jsx
+    │   │   ├── NavHero.jsx
+    │   │   ├── Navbar.jsx
+    │   │   ├── ServiceCards.jsx
+    │   │   ├── WorkoutPlanCreator.jsx
+    │   │   └── WorkoutPlanViewer.jsx
+    │   ├── pages/
+    │   │   ├── CreateWorkout.jsx
+    │   │   ├── Home.jsx
+    │   │   ├── Login.jsx
+    │   │   ├── Profile.jsx
+    │   │   ├── Register.jsx
+    │   │   └── UserManagement.jsx
+    │   ├── services/
+    │   │   └── api.jsx
+    │   ├── utils/
+    │   │   └── axiosConfig.js
+    │   ├── App.jsx
+    │   └── main.jsx
+    ├── .gitignore
+    ├── package.json
+    └── vite.config.js
 
 ## Installazione
 
