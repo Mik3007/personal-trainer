@@ -44,6 +44,7 @@ Questa applicazione web full-stack è pensata per aiutare i personal trainer a g
 
 ## Struttura del Progetto
 
+```
 Personal-trainer/
 ├── backend/
 │   ├── config/
@@ -99,6 +100,7 @@ Personal-trainer/
     ├── .gitignore
     ├── package.json
     └── vite.config.js
+```
 
 ## Installazione
 
